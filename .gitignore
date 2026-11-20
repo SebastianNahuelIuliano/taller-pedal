@@ -16,3 +16,17 @@ desktop.ini
 .idea/
 *.tmp
 *.temp
+# Dependencias
+node_modules/
+
+# Archivos de entorno
+.env
+.env.*
+!.env.example
+
+# Compilación
+dist/
+coverage/
+
+# Logs
+*.log
