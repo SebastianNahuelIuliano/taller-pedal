@@ -1,84 +1,101 @@
+
 # AGENTS.md — Taller Pedal
 
-## 1. Objetivo del proyecto
+## 1. Principio de trabajo
 
-Desarrollar una aplicación web completa para administrar turnos, servicios y reparaciones de un taller mecánico de bicicletas.
+Specification-first y test-driven development. Antes de implementar una funcionalidad, leer la regla RN correspondiente en `docs/spec.md`, la arquitectura de `docs/plan.md` y la tarea de `docs/tasks.md`.
 
-## 2. Reglas generales
+## 2. Fuentes de verdad
 
-- Antes de implementar una funcionalidad, consultar `docs/spec.md`.
-- Respetar todas las reglas de negocio documentadas.
-- Seguir la arquitectura definida en `docs/plan.md`.
-- Consultar las tareas pendientes en `docs/tasks.md`.
-- No implementar funcionalidades que contradigan la especificación.
-- Mantener el código organizado, modular y reutilizable.
+- `docs/spec.md`: comportamiento funcional y reglas de negocio.
+- `docs/plan.md`: arquitectura, modelo de datos y contratos técnicos.
+- `docs/tasks.md`: alcance, dependencias y estado del trabajo.
+- `docs/decisions.md`: decisiones aceptadas y sus motivos.
+- Si hay contradicción, no inventar una solución: registrar el conflicto en `docs/preguntas_abiertas.md` y solicitar resolución.
 
-## 3. Backend
+## 3. Reglas generales
 
-- Utilizar Node.js, Express y TypeScript.
+- No implementar funcionalidades fuera del alcance acordado sin actualizar documentación.
+- No marcar tareas como terminadas sin implementación y verificación.
+- No inventar resultados de pruebas ni URLs de despliegue.
+- Mantener nombres, estados y contratos consistentes entre frontend, backend y base de datos.
+- Preferir soluciones simples y mantenibles.
+
+## 4. Backend
+
+- Usar TypeScript con `strict: true`.
 - Separar rutas, controladores, servicios y repositorios.
-- Implementar las reglas de negocio en la capa de servicios.
-- Validar los datos recibidos.
-- Gestionar los errores mediante un middleware centralizado.
-- Utilizar consultas parametrizadas.
-- No exponer información sensible.
-- Implementar autenticación y autorización.
+- Los controladores traducen HTTP; la lógica de negocio vive en servicios.
+- El acceso SQL vive en repositorios.
+- Validar entradas en el límite de la API.
+- Usar consultas parametrizadas.
+- Centralizar el manejo de errores.
+- Las operaciones que modifican varias entidades deben usar transacciones.
+- Validar autorización en el servidor, nunca confiar solamente en el frontend.
 
-## 4. Frontend
+## 5. Frontend
 
-- Utilizar React, TypeScript y Vite.
-- Crear componentes reutilizables.
-- Mantener separadas las páginas, componentes y servicios de comunicación con la API.
-- Validar los formularios.
-- Mostrar mensajes claros de éxito y error.
-- Implementar estados de carga y pantallas vacías.
-- Respetar los permisos de cada tipo de usuario.
+- Usar React y TypeScript.
+- Separar páginas, componentes, hooks y cliente API.
+- Los formularios deben mostrar errores comprensibles.
+- Incluir estados de carga, vacío y error.
+- Proteger rutas por sesión y rol como mejora de experiencia, sin reemplazar la autorización del backend.
+- No duplicar reglas críticas de negocio como única validación en el navegador.
 
-## 5. Base de datos
+## 6. Base de datos
 
-- Utilizar PostgreSQL.
-- Mantener las relaciones y restricciones necesarias.
-- Crear migraciones versionadas.
-- Evitar la eliminación de información histórica importante.
-- No almacenar contraseñas en texto plano.
-
-## 6. Pruebas
-
-- Escribir pruebas para las reglas de negocio.
-- Probar los casos válidos e inválidos.
-- No considerar terminada una tarea si sus pruebas fallan.
-- Ejecutar la suite completa antes de finalizar una tarea.
+- PostgreSQL como fuente persistente.
+- Versionar cambios mediante migraciones.
+- Declarar claves foráneas, restricciones e índices.
+- Usar `NUMERIC` para importes monetarios.
+- Guardar timestamps de forma consistente y presentar fechas en la zona horaria del taller.
+- No borrar físicamente registros que formen parte de un historial necesario.
 
 ## 7. Seguridad
 
-- No guardar secretos ni contraseñas en el repositorio.
-- Utilizar variables de entorno.
-- Mantener el archivo `.env` fuera de Git.
-- Validar y sanitizar las entradas.
-- Proteger las rutas privadas.
-- Verificar permisos en el backend, no solamente en el frontend.
+- Nunca guardar `.env`, contraseñas, tokens ni claves en Git.
+- Mantener `.env.example` sin valores secretos.
+- Hashear contraseñas con una biblioteca reconocida.
+- Aplicar autorización por rol y propiedad del recurso.
+- Configurar CORS para el origen real del frontend.
+- Validar datos recibidos y limitar intentos en autenticación.
+- No registrar contraseñas, tokens ni datos sensibles en logs.
 
-## 8. Git y commits
+## 8. Pruebas
 
-- Realizar un commit por cada tarea completada.
-- Utilizar mensajes descriptivos.
-- No marcar tareas como terminadas sin verificar su implementación.
-- No incluir archivos generados o secretos en los commits.
+- Cada regla RN debe tener pruebas asociadas.
+- Probar caminos exitosos, rechazos y límites.
+- Usar reloj inyectable o fechas controladas en pruebas temporales.
+- Probar concurrencia en reservas e inventario.
+- Ejecutar tests y compilación antes de cerrar una tarea.
+- Registrar resultados reales en `docs/informe-pruebas.md`.
 
-## 9. Documentación
+## 9. Git
 
-- Actualizar README y documentos cuando corresponda.
-- Mantener la especificación sincronizada con el comportamiento real.
-- Registrar las decisiones técnicas importantes.
-- Documentar los resultados de las pruebas.
+- Un commit por tarea lógica terminada.
+- Usar mensajes descriptivos, por ejemplo `docs: completar especificación de negocio`.
+- No mezclar secretos, archivos temporales ni `node_modules`.
+- No hacer commits de tareas que no pasaron sus verificaciones.
+- Actualizar `docs/tasks.md` en el mismo trabajo que completa la tarea.
 
-## 10. Criterio de finalización
+## 10. Definición de terminado
 
-Una tarea solamente puede marcarse como completada cuando:
+Una tarea está terminada solamente si:
+1. Cumple sus criterios de aceptación.
+2. Respeta las RN relacionadas.
+3. Tiene pruebas adecuadas y aprobadas.
+4. La aplicación compila.
+5. No rompe pruebas existentes.
+6. La documentación está actualizada.
+7. Existe un commit identificable.
 
-1. Su implementación está realizada.
-2. Cumple la especificación.
-3. Sus pruebas pasan.
-4. No introduce errores en funcionalidades existentes.
-5. Se actualizó la documentación correspondiente.
-6. Se creó su commit individual.
+## 11. Agentes o responsabilidades
+
+- **Analista:** aclara reglas, historias y casos límite.
+- **Arquitecto:** mantiene el diseño y contratos.
+- **Backend:** implementa API y dominio.
+- **Frontend:** implementa pantallas y flujos.
+- **Tester:** diseña y ejecuta pruebas.
+- **Revisor:** verifica trazabilidad, seguridad y calidad.
+
+Una misma persona puede asumir varias responsabilidades; estos nombres describen tareas, no herramientas obligatorias.

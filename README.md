@@ -1,74 +1,90 @@
-# Taller Pedal 🚲
 
-Sistema web de gestión de turnos y reparaciones para un taller mecánico de bicicletas.
+# Taller Pedal
 
-## Descripción
+Sistema web para gestionar turnos, bicicletas, diagnósticos, presupuestos y reparaciones de un taller mecánico de bicicletas.
 
-Taller Pedal es una aplicación web que permite a los clientes reservar turnos para realizar servicios de mantenimiento y reparación de bicicletas.
+## Estado
 
-El sistema también permite que los administradores gestionen los servicios, mecánicos, turnos, presupuestos, reparaciones y el inventario de repuestos.
+Proyecto académico en desarrollo. Este repositorio contiene la documentación funcional y técnica inicial. Las funcionalidades se considerarán implementadas únicamente cuando exista código, pruebas aprobadas y evidencia de ejecución.
 
-El objetivo es digitalizar la administración del taller, mejorar la organización de los horarios y facilitar el seguimiento de cada reparación.
+## Objetivo
 
-## Funcionalidades principales
+Centralizar la operación del taller, permitir que los clientes reserven turnos y sigan sus reparaciones, y ofrecer al personal herramientas para organizar trabajos, presupuestos e inventario.
 
-### Clientes
-- Registro e inicio de sesión.
-- Consulta de servicios disponibles.
-- Reserva de turnos.
-- Consulta y cancelación de turnos.
-- Registro de bicicletas propias.
-- Seguimiento de reparaciones.
-- Consulta y aprobación de presupuestos.
-- Historial de servicios realizados.
+## Roles
 
-### Administración
-- Gestión de servicios.
-- Gestión de mecánicos.
-- Administración de turnos.
-- Gestión de reparaciones.
-- Elaboración de presupuestos.
-- Control de inventario.
-- Registro de repuestos utilizados.
-- Panel de estadísticas.
+- **Cliente:** administra sus bicicletas, reserva y consulta turnos, y responde presupuestos.
+- **Mecánico:** consulta trabajos asignados, registra diagnósticos y actualiza reparaciones.
+- **Administrador:** gestiona servicios, horarios, personal, turnos e inventario.
 
-## Tecnologías
+## Alcance del MVP
+
+1. Registro, inicio de sesión y autorización por roles.
+2. ABM de bicicletas del cliente.
+3. Catálogo de servicios.
+4. Horarios de atención y disponibilidad.
+5. Reserva, consulta y cancelación de turnos.
+6. Asignación de mecánicos.
+7. Recepción y diagnóstico.
+8. Presupuestos y aprobación del cliente.
+9. Seguimiento de reparaciones.
+10. Inventario y consumo de repuestos.
+11. Historial de reparaciones.
+
+## Stack previsto
 
 - Frontend: React, TypeScript y Vite.
 - Backend: Node.js, Express y TypeScript.
 - Base de datos: PostgreSQL.
-- Pruebas: Vitest y Supertest.
-- Control de versiones: Git y GitHub.
-- Publicación: Netlify, Render y Neon.
+- Validación: Zod.
+- Pruebas: Vitest y Supertest; pruebas de interfaz con Testing Library.
+- Publicación prevista: Netlify (frontend), Render (backend) y Neon (PostgreSQL).
 
-## Estructura del proyecto
+Las versiones concretas se fijarán en los archivos `package.json` al iniciar la implementación.
+
+## Estructura
 
 ```text
 taller-pedal/
 ├── AGENTS.md
 ├── README.md
 ├── .gitignore
+├── MANUAL_TECNICO.md
+├── MANUAL_USUARIO.md
 ├── docs/
+│   ├── idea.md
+│   ├── spec.md
+│   ├── plan.md
+│   ├── tasks.md
+│   ├── decisions.md
+│   ├── glosario.md
+│   ├── preguntas_abiertas.md
+│   ├── plan-pruebas.md
+│   └── informe-pruebas.md
 ├── backend/
 └── frontend/
 ```
 
 ## Documentación
 
-- `AGENTS.md`: instrucciones para agentes de desarrollo.
-- `docs/idea.md`: descripción de la idea del proyecto.
-- `docs/spec.md`: especificación funcional y reglas de negocio.
-- `docs/plan.md`: arquitectura y planificación técnica.
-- `docs/tasks.md`: tareas de desarrollo.
-- `docs/decisions.md`: decisiones técnicas.
-- `docs/glosario.md`: términos del sistema.
-- `docs/plan-pruebas.md`: estrategia de pruebas.
-- `docs/informe-pruebas.md`: resultados de las pruebas.
+- [Idea](docs/idea.md)
+- [Especificación funcional](docs/spec.md)
+- [Plan técnico](docs/plan.md)
+- [Tareas](docs/tasks.md)
+- [Decisiones](docs/decisions.md)
+- [Glosario](docs/glosario.md)
+- [Preguntas abiertas](docs/preguntas_abiertas.md)
+- [Plan de pruebas](docs/plan-pruebas.md)
+- [Informe de pruebas](docs/informe-pruebas.md)
 
-## Estado del proyecto
+## Configuración local
 
-En desarrollo.
+La configuración detallada se documentará en `MANUAL_TECNICO.md`. Los secretos se configuran mediante variables de entorno y nunca se suben al repositorio. No existe todavía una URL de producción confirmada.
+
+## Criterio de finalización
+
+El MVP se considerará entregado cuando los flujos incluidos estén implementados, las pruebas automatizadas estén aprobadas, el frontend y backend estén publicados, la base de datos remota funcione y el enlace público permita probar las operaciones principales.
 
 ## Autor
 
-Sebastian Nahuel Iuliano
+Sebastián Nahuel Iuliano
