@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "vitest run",
-    "db:check": "tsx src/config/checkDatabase.ts"
+    "db:check": "tsx src/config/checkDatabase.ts",
+    "db:migrate": "tsx src/config/migrate.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
