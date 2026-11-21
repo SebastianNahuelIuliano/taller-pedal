@@ -24,7 +24,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T15 | Implementar cancelación | T14 | regla 12 horas y liberación de agenda | DONE |
 | T16 | Implementar asignación/reasignación | T14 | no se permiten conflictos | DONE |
 | T17 | Implementar recepción y órdenes | T14 | orden vinculada al turno | DONE |
-| T18 | Implementar diagnóstico | T17 | diagnóstico y permisos probados | IN_PROGRESS |
+| T18 | Implementar diagnóstico | T17 | diagnóstico y permisos probados | DONE |
 | T19 | Implementar presupuestos | T18 | conceptos y total calculado en servidor | TODO |
 | T20 | Implementar aprobación/rechazo | T19 | propietario responde una sola vez | TODO |
 | T21 | Implementar estados de reparación | T20 | transiciones e historial probados | TODO |
