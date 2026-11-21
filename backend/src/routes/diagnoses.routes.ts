@@ -105,9 +105,12 @@ router.post(
         );
       }
 
-      if (order.status !== "RECEIVED") {
+            if (
+        order.status !== "RECEIVED" &&
+        order.status !== "DIAGNOSIS"
+      ) {
         throw new DiagnosisError(
-          "Solo se pueden diagnosticar órdenes que ya fueron recibidas",
+          "Solo se pueden diagnosticar órdenes recibidas o en diagnóstico",
           409
         );
       }
@@ -130,6 +133,33 @@ router.post(
       );
 
       const diagnosis = diagnosisResult.rows[0];
+
+            // El primer diagnóstico inicia el estado DIAGNOSIS.
+      if (order.status === "RECEIVED") {
+        await client.query(
+          `UPDATE repair_orders
+           SET status = 'DIAGNOSIS',
+               updated_at = NOW()
+           WHERE id = $1`,
+          [orderId]
+        );
+
+        await client.query(
+          `INSERT INTO repair_status_history (
+             repair_order_id,
+             previous_status,
+             new_status,
+             changed_by,
+             notes
+           )
+           VALUES ($1, 'RECEIVED', 'DIAGNOSIS', $2, $3)`,
+          [
+            orderId,
+            user.id,
+            "Diagnóstico inicial registrado",
+          ]
+        );
+      }
 
       await client.query(
         `INSERT INTO audit_logs (

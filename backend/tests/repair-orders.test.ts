@@ -104,6 +104,10 @@ function mockReceptionTransaction(
     .mockResolvedValueOnce({
       rows: [],
       rowCount: 1,
+    }) // STATUS HISTORY
+    .mockResolvedValueOnce({
+      rows: [],
+      rowCount: 1,
     }) // AUDIT
     .mockResolvedValueOnce({
       rows: [],
@@ -186,6 +190,15 @@ describe("Recepcion de bicicletas y ordenes", () => {
     expect(transactionQueryMock).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO repair_orders"),
       [appointmentId, mechanicId, "Cuadro con rayones", "Casco"]
+    );
+
+    expect(transactionQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO repair_status_history"),
+      [
+        orderId,
+        mechanicId,
+        "Recepción inicial de la bicicleta",
+      ]
     );
 
     expect(transactionQueryMock).toHaveBeenCalledWith(

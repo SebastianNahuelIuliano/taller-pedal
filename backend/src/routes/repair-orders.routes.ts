@@ -36,7 +36,7 @@ router.post(
     ) {
       res.status(400).json({
         success: false,
-        message: "El identificador del turno es inv醠ido",
+        message: "El identificador del turno es inv谩lido",
       });
       return;
     }
@@ -47,7 +47,7 @@ router.post(
     ) {
       res.status(400).json({
         success: false,
-        message: "Deb閟 describir el estado visible de la bicicleta",
+        message: "Deb茅s describir el estado visible de la bicicleta",
       });
       return;
     }
@@ -60,7 +60,7 @@ router.post(
     ) {
       res.status(400).json({
         success: false,
-        message: "Los datos de recepci髇 superan la longitud permitida",
+        message: "Los datos de recepci贸n superan la longitud permitida",
       });
       return;
     }
@@ -74,7 +74,7 @@ router.post(
       await client.query("BEGIN");
       transactionStarted = true;
 
-      // Bloquea el turno para evitar recepciones simult醤eas.
+      // Bloquea el turno para evitar recepciones simult谩neas.
       const appointmentResult = await client.query(
         `SELECT id, mechanic_id, status
          FROM appointments
@@ -96,13 +96,13 @@ router.post(
         );
       }
 
-      // Un mec醤ico solo puede recibir turnos que tenga asignados.
+      // Un mec谩nico solo puede recibir turnos que tenga asignados.
       if (
         user.role === "MECANICO" &&
         appointment.mechanic_id !== user.id
       ) {
         throw new ReceptionError(
-          "No ten閟 permiso para recibir este turno",
+          "No ten茅s permiso para recibir este turno",
           403
         );
       }
@@ -121,7 +121,7 @@ router.post(
         existingOrderResult.rowCount > 0
       ) {
         throw new ReceptionError(
-          "Este turno ya tiene una orden de reparaci髇",
+          "Este turno ya tiene una orden de reparaci贸n",
           409
         );
       }
@@ -155,7 +155,24 @@ router.post(
 
       const order = orderResult.rows[0];
 
-      // Registra la recepci髇 para mantener trazabilidad.
+      // Registra el estado inicial en el historial.
+      await client.query(
+        `INSERT INTO repair_status_history (
+           repair_order_id,
+           previous_status,
+           new_status,
+           changed_by,
+           notes
+         )
+         VALUES ($1, NULL, 'RECEIVED', $2, $3)`,
+        [
+          order.id,
+          user.id,
+          "Recepci贸n inicial de la bicicleta",
+        ]
+      );
+
+      // Registra la recepci贸n para mantener trazabilidad.
       await client.query(
         `INSERT INTO audit_logs (
            user_id,
@@ -189,7 +206,7 @@ router.post(
 
       res.status(201).json({
         success: true,
-        message: "Bicicleta recibida y orden de reparaci髇 creada correctamente",
+        message: "Bicicleta recibida y orden de reparaci贸n creada correctamente",
         data: order,
       });
     } catch (error) {
@@ -211,7 +228,7 @@ router.post(
       if (databaseError.code === "23505") {
         res.status(409).json({
           success: false,
-          message: "Este turno ya tiene una orden de reparaci髇",
+          message: "Este turno ya tiene una orden de reparaci贸n",
         });
         return;
       }

@@ -56,7 +56,8 @@ function mockOrderTransaction(options?: {
   const ownerId = options?.ownerId ?? clientId;
   const estimateExists = options?.estimateExists ?? true;
   const estimateStatus = options?.estimateStatus ?? "PENDING";
-  const orderStatus = options?.orderStatus ?? "RECEIVED";
+  const orderStatus =
+    options?.orderStatus ?? "WAITING_APPROVAL";
   const decision = options?.decision ?? "APPROVED";
 
   transactionQueryMock
@@ -80,6 +81,7 @@ function mockOrderTransaction(options?: {
       rows: [],
       rowCount: null,
     }); // ROLLBACK
+
     return;
   }
 
@@ -88,6 +90,16 @@ function mockOrderTransaction(options?: {
       rows: [],
       rowCount: null,
     }); // ROLLBACK
+
+    return;
+  }
+
+  if (orderStatus !== "WAITING_APPROVAL") {
+    transactionQueryMock.mockResolvedValueOnce({
+      rows: [],
+      rowCount: null,
+    }); // ROLLBACK
+
     return;
   }
 
@@ -109,6 +121,7 @@ function mockOrderTransaction(options?: {
       rows: [],
       rowCount: null,
     }); // ROLLBACK
+
     return;
   }
 
@@ -241,6 +254,23 @@ describe("Respuesta de presupuestos", () => {
     expect(transactionQueryMock).toHaveBeenCalledWith("ROLLBACK");
   });
 
+  it("rechaza responder presupuestos si la orden no espera aprobacion", async () => {
+    mockAuthentication();
+    mockOrderTransaction({
+      orderStatus: "APPROVED",
+    });
+
+    const response = await request(app)
+      .patch(
+        `/api/repair-orders/${orderId}/estimates/${estimateId}/respond`
+      )
+      .set("Authorization", `Bearer ${clientToken}`)
+      .send({ decision: "APPROVED" });
+
+    expect(response.status).toBe(409);
+    expect(transactionQueryMock).toHaveBeenCalledWith("ROLLBACK");
+  });
+
   it("rechaza presupuestos que no pertenecen a la orden", async () => {
     mockAuthentication();
     mockOrderTransaction({ estimateExists: false });
@@ -294,14 +324,14 @@ describe("Respuesta de presupuestos", () => {
 
     expect(transactionQueryMock).toHaveBeenCalledWith(
       expect.stringContaining("status = 'PENDING'"),
-      [ "APPROVED", clientId, estimateId, orderId ]
+      ["APPROVED", clientId, estimateId, orderId]
     );
 
     expect(transactionQueryMock).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO repair_status_history"),
       expect.arrayContaining([
         orderId,
-        "RECEIVED",
+        "WAITING_APPROVAL",
         "APPROVED",
         clientId,
       ])
@@ -335,7 +365,7 @@ describe("Respuesta de presupuestos", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.data.status).toBe("REJECTED");
-    expect(response.body.data.repair_order_status).toBe("RECEIVED");
+    expect(response.body.data.repair_order_status).toBe("WAITING_APPROVAL");
 
     expect(transactionQueryMock).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO audit_logs"),

@@ -65,16 +65,24 @@ function mockEstimateTransaction(options?: {
   mechanicId?: string;
   diagnosis?: boolean;
   previousStatus?: string;
+  orderStatus?: string;
 }) {
   const mechanic = options?.mechanicId ?? mechanicId;
   const hasDiagnosis = options?.diagnosis ?? true;
   const previousStatus = options?.previousStatus;
+  const orderStatus =
+    options?.orderStatus ??
+    (previousStatus ? "WAITING_APPROVAL" : "DIAGNOSIS");
 
   transactionQueryMock
-    .mockResolvedValueOnce({ rows: [], rowCount: null }) // BEGIN
+    .mockResolvedValueOnce({
+      rows: [],
+      rowCount: null,
+    }) // BEGIN
     .mockResolvedValueOnce({
       rows: [{
         id: orderId,
+        status: orderStatus,
         mechanic_id: mechanic,
       }],
       rowCount: 1,
@@ -89,6 +97,7 @@ function mockEstimateTransaction(options?: {
       rows: [],
       rowCount: null,
     }); // ROLLBACK
+
     return;
   }
 
@@ -99,11 +108,12 @@ function mockEstimateTransaction(options?: {
     rowCount: previousStatus ? 1 : 0,
   }); // PREVIOUS ESTIMATE
 
-  if (previousStatus === "PENDING") {
+  if (previousStatus && previousStatus !== "REJECTED") {
     transactionQueryMock.mockResolvedValueOnce({
       rows: [],
       rowCount: null,
     }); // ROLLBACK
+
     return;
   }
 
@@ -144,7 +154,21 @@ function mockEstimateTransaction(options?: {
     .mockResolvedValueOnce({
       rows: [{ total: "25000.00" }],
       rowCount: 1,
-    }) // UPDATE TOTAL
+    }); // UPDATE TOTAL
+
+  if (orderStatus === "DIAGNOSIS") {
+    transactionQueryMock
+      .mockResolvedValueOnce({
+        rows: [],
+        rowCount: 1,
+      }) // UPDATE STATUS
+      .mockResolvedValueOnce({
+        rows: [],
+        rowCount: 1,
+      }); // STATUS HISTORY
+  }
+
+  transactionQueryMock
     .mockResolvedValueOnce({
       rows: [],
       rowCount: 1,
@@ -267,6 +291,20 @@ describe("Presupuestos de ordenes de reparacion", () => {
       [estimateId]
     );
 
+    expect(transactionQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining("UPDATE repair_orders"),
+      [orderId]
+    );
+
+    expect(transactionQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO repair_status_history"),
+      [
+        orderId,
+        mechanicId,
+        "Presupuesto enviado al cliente para su aprobación",
+      ]
+    );
+
     expect(transactionQueryMock).toHaveBeenCalledWith("COMMIT");
     expect(releaseMock).toHaveBeenCalledOnce();
   });
@@ -299,7 +337,7 @@ describe("Presupuestos de ordenes de reparacion", () => {
     expect(transactionQueryMock).toHaveBeenCalledWith("ROLLBACK");
   });
 
-  it("permite crear una nueva version cuando el presupuesto anterior ya fue respondido", async () => {
+  it("permite crear una nueva version cuando el presupuesto anterior fue rechazado", async () => {
     mockAuthentication();
     mockEstimateTransaction({
       previousStatus: "REJECTED",
@@ -319,6 +357,21 @@ describe("Presupuestos de ordenes de reparacion", () => {
     mockAuthentication();
     mockEstimateTransaction({
       previousStatus: "PENDING",
+    });
+
+    const response = await request(app)
+      .post(`/api/repair-orders/${orderId}/estimates`)
+      .set("Authorization", `Bearer ${mechanicToken}`)
+      .send({ items: validItems });
+
+    expect(response.status).toBe(409);
+    expect(transactionQueryMock).toHaveBeenCalledWith("ROLLBACK");
+  });
+
+  it("rechaza crear otra version si el presupuesto anterior fue aprobado", async () => {
+    mockAuthentication();
+    mockEstimateTransaction({
+      previousStatus: "APPROVED",
     });
 
     const response = await request(app)
@@ -403,4 +456,3 @@ describe("Presupuestos de ordenes de reparacion", () => {
     expect(response.status).toBe(403);
   });
 });
-

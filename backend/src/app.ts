@@ -16,6 +16,7 @@ import repairOrdersRoutes from "./routes/repair-orders.routes.js";
 import diagnosesRoutes from "./routes/diagnoses.routes.js";
 import estimatesRoutes from "./routes/estimates.routes.js";
 import estimatesResponseRoutes from "./routes/estimates.response.routes.js";
+import repairStatusRoutes from "./routes/repair-status.routes.js";
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use("/api/appointments", repairOrdersRoutes);
 app.use("/api/repair-orders", diagnosesRoutes);
 app.use("/api/repair-orders", estimatesRoutes);
 app.use("/api/repair-orders", estimatesResponseRoutes);
+app.use("/api/repair-orders", repairStatusRoutes);
 
 // Ruta no encontrada.
 app.use((_req, res) => {

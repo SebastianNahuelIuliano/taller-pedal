@@ -117,6 +117,7 @@ router.post(
       const orderResult = await client.query(
         `SELECT
            ro.id,
+           ro.status,
            a.mechanic_id
          FROM repair_orders ro
          INNER JOIN appointments a
@@ -142,6 +143,16 @@ router.post(
         throw new EstimateError(
           "Solo el mecánico asignado puede crear el presupuesto",
           403
+        );
+      }
+
+            if (
+        order.status !== "DIAGNOSIS" &&
+        order.status !== "WAITING_APPROVAL"
+      ) {
+        throw new EstimateError(
+          "La orden debe estar en diagnóstico o esperando aprobación para crear un presupuesto",
+          409
         );
       }
 
@@ -171,11 +182,34 @@ router.post(
 
       if (
         previousEstimateResult.rowCount &&
-        previousEstimateResult.rowCount > 0 &&
-        previousEstimateResult.rows[0].status === "PENDING"
+        previousEstimateResult.rowCount > 0
       ) {
+        const previousStatus =
+          previousEstimateResult.rows[0].status;
+
+        if (previousStatus === "PENDING") {
+          throw new EstimateError(
+            "El presupuesto anterior todavía está pendiente de respuesta",
+            409
+          );
+        }
+
+        if (previousStatus !== "REJECTED") {
+          throw new EstimateError(
+            "Solo se puede crear una nueva versión si el presupuesto anterior fue rechazado",
+            409
+          );
+        }
+
+        if (order.status !== "WAITING_APPROVAL") {
+          throw new EstimateError(
+            "La orden debe estar esperando aprobación para crear una nueva versión",
+            409
+          );
+        }
+      } else if (order.status !== "DIAGNOSIS") {
         throw new EstimateError(
-          "El presupuesto anterior todavía está pendiente de respuesta",
+          "El primer presupuesto debe crearse durante el diagnóstico",
           409
         );
       }
@@ -245,6 +279,33 @@ router.post(
       );
 
       const total = totalResult.rows[0].total;
+
+            // El primer presupuesto inicia la espera de aprobación.
+      if (order.status === "DIAGNOSIS") {
+        await client.query(
+          `UPDATE repair_orders
+           SET status = 'WAITING_APPROVAL',
+               updated_at = NOW()
+           WHERE id = $1`,
+          [orderId]
+        );
+
+        await client.query(
+          `INSERT INTO repair_status_history (
+             repair_order_id,
+             previous_status,
+             new_status,
+             changed_by,
+             notes
+           )
+           VALUES ($1, 'DIAGNOSIS', 'WAITING_APPROVAL', $2, $3)`,
+          [
+            orderId,
+            user.id,
+            "Presupuesto enviado al cliente para su aprobación",
+          ]
+        );
+      }
 
       await client.query(
         `INSERT INTO audit_logs (

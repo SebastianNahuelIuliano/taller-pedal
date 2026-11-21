@@ -39,7 +39,8 @@ router.patch(
     ) {
       res.status(400).json({
         success: false,
-        message: "El identificador de la orden o del presupuesto es inválido",
+        message:
+          "El identificador de la orden o del presupuesto es inválido",
       });
       return;
     }
@@ -50,7 +51,8 @@ router.patch(
     ) {
       res.status(400).json({
         success: false,
-        message: "La decisión debe ser APPROVED o REJECTED",
+        message:
+          "La decisión debe ser APPROVED o REJECTED",
       });
       return;
     }
@@ -90,6 +92,13 @@ router.patch(
         throw new EstimateResponseError(
           "Solo el cliente propietario puede responder este presupuesto",
           403
+        );
+      }
+
+      if (order.status !== "WAITING_APPROVAL") {
+        throw new EstimateResponseError(
+          "La orden no está esperando la aprobación de un presupuesto",
+          409
         );
       }
 
@@ -143,10 +152,10 @@ router.patch(
         );
       }
 
-        const newOrderStatus =
+      const newOrderStatus =
         decision === "APPROVED"
           ? "APPROVED"
-          : order.status;
+          : "WAITING_APPROVAL";
 
       if (decision === "APPROVED") {
         await client.query(
@@ -157,9 +166,7 @@ router.patch(
            WHERE id = $2`,
           [newOrderStatus, orderId]
         );
-      }
 
-      if (decision === "APPROVED") {
         await client.query(
           `INSERT INTO repair_status_history (
              repair_order_id,
@@ -171,8 +178,8 @@ router.patch(
            VALUES ($1, $2, $3, $4, $5)`,
           [
             orderId,
-            order.status,
-            newOrderStatus,
+            "WAITING_APPROVAL",
+            "APPROVED",
             user.id,
             `Presupuesto versión ${estimate.version} aprobado`,
           ]

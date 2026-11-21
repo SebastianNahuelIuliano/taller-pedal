@@ -96,10 +96,12 @@ describe("Diagnosticos de ordenes de reparacion", () => {
         }],
         rowCount: 1,
       })
-      .mockResolvedValueOnce({
+            .mockResolvedValueOnce({
         rows: [diagnosis],
         rowCount: 1,
       })
+      .mockResolvedValueOnce({ rows: [], rowCount: 1 }) // UPDATE STATUS
+      .mockResolvedValueOnce({ rows: [], rowCount: 1 }) // STATUS HISTORY
       .mockResolvedValueOnce({ rows: [], rowCount: null }) // AUDIT
       .mockResolvedValueOnce({ rows: [], rowCount: null }); // COMMIT
 
@@ -114,6 +116,20 @@ describe("Diagnosticos de ordenes de reparacion", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.data.description).toBe("Desgaste de cadena");
+
+        expect(transactionQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining("UPDATE repair_orders"),
+      [orderId]
+    );
+
+    expect(transactionQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO repair_status_history"),
+      [
+        orderId,
+        mechanicId,
+        "Diagnóstico inicial registrado",
+      ]
+    );
 
     expect(transactionQueryMock).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO diagnoses"),
