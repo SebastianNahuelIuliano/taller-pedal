@@ -8,7 +8,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | ID | Tarea | Dependencias | Criterio de finalizaciÃ³n | Estado |
 |---|---|---|---|---|
 | T01 | Crear repositorio y estructura inicial | â€” | Repo pÃºblico, carpetas y archivos base | DONE* |
-| T02 | Completar documentaciÃ³n funcional | T01 | spec con RN, HU, EC y trazabilidad revisada | IN_PROGRESS |
+| T02 | Completar documentaciÃ³n funcional | T01 | spec con RN, HU, EC y trazabilidad revisada | DONDE |
 | T03 | Definir arquitectura y modelo de datos | T02 | plan y entidades coherentes con spec | TODO |
 | T04 | Completar decisiones y glosario | T02 | decisiones y tÃ©rminos documentados | DONE |
 | T05 | Definir plan de pruebas | T02,T03 | matriz de pruebas por RN | DONE |
@@ -28,7 +28,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T19 | Implementar presupuestos | T18 | conceptos y total calculado en servidor | DONE |
 | T20 | Implementar aprobaciÃ³n/rechazo | T19 | propietario responde una sola vez | DONE |
 | T21 | Implementar estados de reparaciÃ³n | T20 | transiciones e historial probados | DONE |
-| T22 | Implementar catÃ¡logo de repuestos | T07,T09 | ABM y cÃ³digo Ãºnico | TODO |
+| T22 | Implementar catÃ¡logo de repuestos | T07,T09 | ABM y cÃ³digo Ãºnico | DONE |
 | T23 | Implementar consumo de repuestos | T21,T22 | stock y movimiento atÃ³micos | TODO |
 | T24 | Implementar historial | T17,T21,T23 | cliente ve solo sus registros | TODO |
 | T25 | Inicializar frontend React | T03 | Vite, TS y estructura compilan | TODO |
