@@ -34,6 +34,7 @@ const orderId = "97f1bba4-a421-4f84-91ca-70eacd7ae695";
 const sparePartId = "87f1bba4-a421-4f84-91ca-70eacd7ae695";
 
 const mechanicToken = createAccessToken(mechanicId, "MECANICO");
+const otherMechanicToken = createAccessToken(otherMechanicId, "MECANICO");
 const adminToken = createAccessToken(adminId, "ADMINISTRADOR");
 const clientToken = createAccessToken(clientId, "CLIENTE");
 
@@ -439,5 +440,129 @@ describe("Consumo de repuestos", () => {
       "COMMIT"
     );
     expect(releaseMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe("Historial de consumos", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("permite al cliente consultar los movimientos de su orden", async () => {
+    mockAuthentication("CLIENTE", clientId);
+
+    queryMock
+      .mockResolvedValueOnce({
+        rows: [{ id: orderId, client_id: clientId, mechanic_id: mechanicId }],
+        rowCount: 1,
+      })
+      .mockResolvedValueOnce({
+        rows: [{
+          id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          spare_part_id: sparePartId,
+          spare_part_code: "REP-001",
+          spare_part_name: "Cadena",
+          repair_order_id: orderId,
+          movement_type: "OUT",
+          quantity: 1,
+          notes: "Reemplazo",
+          created_by: mechanicId,
+          created_by_name: "Mecánico",
+          created_at: new Date().toISOString(),
+        }],
+        rowCount: 1,
+      });
+
+    const response = await request(app)
+      .get(`/api/repair-orders/${orderId}/consumptions`)
+      .set("Authorization", `Bearer ${clientToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toHaveLength(1);
+    expect(response.body.data[0].spare_part_name).toBe("Cadena");
+  });
+
+  it("rechaza al cliente que no es propietario de la orden", async () => {
+    mockAuthentication("CLIENTE", clientId);
+
+    queryMock.mockResolvedValueOnce({
+      rows: [{
+        id: orderId,
+        client_id: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        mechanic_id: mechanicId,
+      }],
+      rowCount: 1,
+    });
+
+    const response = await request(app)
+      .get(`/api/repair-orders/${orderId}/consumptions`)
+      .set("Authorization", `Bearer ${clientToken}`);
+
+    expect(response.status).toBe(403);
+    expect(queryMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("rechaza al mecánico que no tiene asignada la orden", async () => {
+    mockAuthentication("MECANICO", otherMechanicId);
+
+    queryMock.mockResolvedValueOnce({
+      rows: [{ id: orderId, client_id: clientId, mechanic_id: mechanicId }],
+      rowCount: 1,
+    });
+
+    const response = await request(app)
+      .get(`/api/repair-orders/${orderId}/consumptions`)
+      .set("Authorization", `Bearer ${otherMechanicToken}`);
+
+    expect(response.status).toBe(403);
+    expect(queryMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("permite al administrador consultar los movimientos", async () => {
+    mockAuthentication("ADMINISTRADOR", adminId);
+
+    queryMock
+      .mockResolvedValueOnce({
+        rows: [{ id: orderId, client_id: clientId, mechanic_id: mechanicId }],
+        rowCount: 1,
+      })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 });
+
+    const response = await request(app)
+      .get(`/api/repair-orders/${orderId}/consumptions`)
+      .set("Authorization", `Bearer ${adminToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual([]);
+  });
+
+  it("devuelve 404 si la orden no existe", async () => {
+    mockAuthentication();
+
+    queryMock.mockResolvedValueOnce({ rows: [], rowCount: 0 });
+
+    const response = await request(app)
+      .get(`/api/repair-orders/${orderId}/consumptions`)
+      .set("Authorization", `Bearer ${mechanicToken}`);
+
+    expect(response.status).toBe(404);
+  });
+
+  it("rechaza un identificador inválido", async () => {
+    mockAuthentication();
+
+    const response = await request(app)
+      .get("/api/repair-orders/invalid/consumptions")
+      .set("Authorization", `Bearer ${mechanicToken}`);
+
+    expect(response.status).toBe(400);
+    expect(queryMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("requiere autenticación", async () => {
+    const response = await request(app)
+      .get(`/api/repair-orders/${orderId}/consumptions`);
+
+    expect(response.status).toBe(401);
   });
 });

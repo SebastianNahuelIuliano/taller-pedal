@@ -20,6 +20,104 @@ class HttpError extends Error {
   }
 }
 
+// Consultar el historial de movimientos de repuestos de una orden.
+router.get(
+  "/:id/consumptions",
+  authenticateToken,
+  async (req, res, next) => {
+    const id = req.params.id;
+    const user = req.user!;
+
+    if (typeof id !== "string" || !uuidRegex.test(id)) {
+      res.status(400).json({
+        success: false,
+        message: "El identificador de la orden es inválido",
+      });
+      return;
+    }
+
+    try {
+      const orderResult = await pool.query(
+        `
+          SELECT
+            ro.id,
+            a.client_id,
+            a.mechanic_id
+          FROM repair_orders ro
+          INNER JOIN appointments a
+            ON a.id = ro.appointment_id
+          WHERE ro.id = $1
+        `,
+        [id]
+      );
+
+      if (orderResult.rowCount === 0) {
+        res.status(404).json({
+          success: false,
+          message: "La orden de reparación no existe",
+        });
+        return;
+      }
+
+      const order = orderResult.rows[0];
+
+      if (
+        user.role === "CLIENTE" &&
+        order.client_id !== user.id
+      ) {
+        res.status(403).json({
+          success: false,
+          message: "No tenés permiso para consultar estos movimientos",
+        });
+        return;
+      }
+
+      if (
+        user.role === "MECANICO" &&
+        order.mechanic_id !== user.id
+      ) {
+        res.status(403).json({
+          success: false,
+          message: "No tenés permiso para consultar estos movimientos",
+        });
+        return;
+      }
+
+      const movementsResult = await pool.query(
+        `
+          SELECT
+            sm.id,
+            sm.spare_part_id,
+            sp.code AS spare_part_code,
+            sp.name AS spare_part_name,
+            sm.repair_order_id,
+            sm.movement_type,
+            sm.quantity,
+            sm.notes,
+            sm.created_by,
+            u.full_name AS created_by_name,
+            sm.created_at
+          FROM stock_movements sm
+          INNER JOIN spare_parts sp
+            ON sp.id = sm.spare_part_id
+          INNER JOIN users u
+            ON u.id = sm.created_by
+          WHERE sm.repair_order_id = $1
+          ORDER BY sm.created_at ASC, sm.id ASC
+        `,
+        [id]
+      );
+
+      res.status(200).json({
+        success: true,
+        data: movementsResult.rows,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.post(
   "/:id/consumptions",
   authenticateToken,
