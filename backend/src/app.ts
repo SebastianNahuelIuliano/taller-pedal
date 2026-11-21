@@ -5,6 +5,8 @@ import express, {
 import cors from "cors";
 import helmet from "helmet";
 import authRoutes from "./routes/auth.routes.js";
+import servicesRoutes from "./routes/services.routes.js";
+import bicyclesRoutes from "./routes/bicycles.routes.js";
 
 const app = express();
 
@@ -18,7 +20,6 @@ app.use(
 
 app.use(express.json({ limit: "10kb" }));
 
-
 app.get("/api/health", (_req, res) => {
   res.status(200).json({
     success: true,
@@ -27,10 +28,16 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-// Rutas de autenticación
+// Rutas de autenticación.
 app.use("/api/auth", authRoutes);
 
-// Ruta no encontrada
+// Rutas de servicios.
+app.use("/api/services", servicesRoutes);
+
+// Rutas de bicicletas.
+app.use("/api/bicycles", bicyclesRoutes);
+
+// Ruta no encontrada.
 app.use((_req, res) => {
   res.status(404).json({
     success: false,
@@ -38,7 +45,7 @@ app.use((_req, res) => {
   });
 });
 
-// Manejo general de errores
+// Manejo general de errores.
 const errorHandler: ErrorRequestHandler = (
   error,
   _req,
