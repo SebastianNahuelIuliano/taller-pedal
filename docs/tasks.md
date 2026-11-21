@@ -25,7 +25,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T16 | Implementar asignación/reasignación | T14 | no se permiten conflictos | DONE |
 | T17 | Implementar recepción y órdenes | T14 | orden vinculada al turno | DONE |
 | T18 | Implementar diagnóstico | T17 | diagnóstico y permisos probados | DONE |
-| T19 | Implementar presupuestos | T18 | conceptos y total calculado en servidor | TODO |
+| T19 | Implementar presupuestos | T18 | conceptos y total calculado en servidor | DONE |
 | T20 | Implementar aprobación/rechazo | T19 | propietario responde una sola vez | TODO |
 | T21 | Implementar estados de reparación | T20 | transiciones e historial probados | TODO |
 | T22 | Implementar catálogo de repuestos | T07,T09 | ABM y código único | TODO |
