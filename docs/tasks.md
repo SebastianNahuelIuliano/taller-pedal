@@ -31,7 +31,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T22 | Implementar catÃ¡logo de repuestos | T07,T09 | ABM y cÃ³digo Ãºnico | DONE |
 | T23 | Implementar consumo de repuestos | T21,T22 | stock y movimiento atÃ³micos | DONDE |
 | T24 | Implementar historial | T17,T21,T23 | cliente ve solo sus registros | DONE |
-| T25 | Inicializar frontend React | T03 | Vite, TS y estructura compilan | TODO |
+| T25 | Inicializar frontend React | T03 | Vite, TS y estructura compilan | DONE |
 | T26 | Implementar autenticaciÃ³n UI | T08,T25 | registro/login/logout integrados | TODO |
 | T27 | Implementar pantallas cliente | T11,T13,T14 | bicicletas, catÃ¡logo, reserva, turnos | TODO |
 | T28 | Implementar pantallas mecÃ¡nico | T17,T18,T21 | agenda, diagnÃ³stico y estados | TODO |
