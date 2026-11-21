@@ -29,7 +29,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T20 | Implementar aprobaciÃ³n/rechazo | T19 | propietario responde una sola vez | DONE |
 | T21 | Implementar estados de reparaciÃ³n | T20 | transiciones e historial probados | DONE |
 | T22 | Implementar catÃ¡logo de repuestos | T07,T09 | ABM y cÃ³digo Ãºnico | DONE |
-| T23 | Implementar consumo de repuestos | T21,T22 | stock y movimiento atÃ³micos | TODO |
+| T23 | Implementar consumo de repuestos | T21,T22 | stock y movimiento atÃ³micos | DONDE |
 | T24 | Implementar historial | T17,T21,T23 | cliente ve solo sus registros | TODO |
 | T25 | Inicializar frontend React | T03 | Vite, TS y estructura compilan | TODO |
 | T26 | Implementar autenticaciÃ³n UI | T08,T25 | registro/login/logout integrados | TODO |
