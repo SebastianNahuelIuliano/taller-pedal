@@ -10,21 +10,21 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T01 | Crear repositorio y estructura inicial | — | Repo público, carpetas y archivos base | DONE* |
 | T02 | Completar documentación funcional | T01 | spec con RN, HU, EC y trazabilidad revisada | IN_PROGRESS |
 | T03 | Definir arquitectura y modelo de datos | T02 | plan y entidades coherentes con spec | TODO |
-| T04 | Completar decisiones y glosario | T02 | decisiones y términos documentados | TODO |
-| T05 | Definir plan de pruebas | T02,T03 | matriz de pruebas por RN | TODO |
-| T06 | Inicializar backend TypeScript | T03 | scripts dev/build/test y compilación | TODO |
-| T07 | Configurar PostgreSQL y migraciones | T06 | migración inicial aplicada en DB de prueba | TODO |
-| T08 | Implementar autenticación | T07 | registro/login/logout y pruebas | TODO |
-| T09 | Implementar autorización | T08 | roles y propiedad probados en API | TODO |
-| T10 | Implementar servicios | T07,T09 | CRUD admin y catálogo público | TODO |
-| T11 | Implementar bicicletas | T09 | ABM propio del cliente y pruebas | TODO |
-| T12 | Implementar horarios y bloqueos | T10 | configuración y validación horaria | TODO |
-| T13 | Implementar disponibilidad | T11,T12 | intervalos correctos y pruebas | TODO |
+| T04 | Completar decisiones y glosario | T02 | decisiones y términos documentados | DONE |
+| T05 | Definir plan de pruebas | T02,T03 | matriz de pruebas por RN | DONE |
+| T06 | Inicializar backend TypeScript | T03 | scripts dev/build/test y compilación | DONE |
+| T07 | Configurar PostgreSQL y migraciones | T06 | migración inicial aplicada en DB de prueba | DONE |
+| T08 | Implementar autenticación | T07 | registro/login/logout y pruebas | DONE |
+| T09 | Implementar autorización | T08 | roles y propiedad probados en API | DONE |
+| T10 | Implementar servicios | T07,T09 | CRUD admin y catálogo público | DONE |
+| T11 | Implementar bicicletas | T09 | ABM propio del cliente y pruebas | DONE |
+| T12 | Implementar horarios y bloqueos | T10 | configuración y validación horaria | DONE |
+| T13 | Implementar disponibilidad | T11,T12 | intervalos correctos y pruebas | DONE |
 | T14 | Implementar reserva transaccional | T13 | no hay doble reserva bajo concurrencia | DONE |
 | T15 | Implementar cancelación | T14 | regla 12 horas y liberación de agenda | DONE |
 | T16 | Implementar asignación/reasignación | T14 | no se permiten conflictos | DONE |
-| T17 | Implementar recepción y órdenes | T14 | orden vinculada al turno | TODO |
-| T18 | Implementar diagnóstico | T17 | diagnóstico y permisos probados | TODO |
+| T17 | Implementar recepción y órdenes | T14 | orden vinculada al turno | DONE |
+| T18 | Implementar diagnóstico | T17 | diagnóstico y permisos probados | IN_PROGRESS |
 | T19 | Implementar presupuestos | T18 | conceptos y total calculado en servidor | TODO |
 | T20 | Implementar aprobación/rechazo | T19 | propietario responde una sola vez | TODO |
 | T21 | Implementar estados de reparación | T20 | transiciones e historial probados | TODO |
@@ -40,7 +40,6 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T31 | Pruebas E2E y regresión | T30 | escenarios críticos aprobados | TODO |
 | T32 | Desplegar DB, API y frontend | T31 | URL pública y smoke tests exitosos | TODO |
 | T33 | Completar manuales e informe | T31,T32 | documentación refleja evidencia real | TODO |
-
 * T01 se considera completada según el trabajo realizado hasta ahora: repositorio creado, estructura y documentación inicial subidas. Si el docente exige evidencias más precisas, conservar el commit correspondiente.
 
 ## Protocolo por tarea

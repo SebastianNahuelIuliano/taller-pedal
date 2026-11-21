@@ -13,6 +13,7 @@ import appointmentsBookingRoutes from "./routes/appointments.booking.routes.js";
 import appointmentsCancellationRoutes from "./routes/appointments.cancellation.routes.js";
 import appointmentsAssignmentRoutes from "./routes/appointments.assignment.routes.js";
 import repairOrdersRoutes from "./routes/repair-orders.routes.js";
+import diagnosesRoutes from "./routes/diagnoses.routes.js";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use("/api/appointments", appointmentsBookingRoutes);
 app.use("/api/appointments", appointmentsCancellationRoutes);
 app.use("/api/appointments", appointmentsAssignmentRoutes);
 app.use("/api/appointments", repairOrdersRoutes);
+app.use("/api/repair-orders", diagnosesRoutes);
 
 // Ruta no encontrada.
 app.use((_req, res) => {
