@@ -1,5 +1,6 @@
 ﻿import { Router } from "express";
 import { pool } from "../config/database.js";
+import type { PoolClient } from "pg";
 import {
   authenticateToken,
   authorizeRoles,
@@ -164,12 +165,17 @@ router.get(
   }
 );
 
-// Crear un bloqueo para un mecánico activo.
+
+ // Crear un bloqueo para un mecánico activo.
 router.post(
   "/blocks",
   authenticateToken,
   authorizeRoles("ADMINISTRADOR"),
   async (req, res, next) => {
+    let client: PoolClient | undefined;
+
+    let transactionStarted = false;
+
     try {
       const {
         mechanicId,
@@ -199,16 +205,25 @@ router.post(
         return;
       }
 
-      const mechanic = await pool.query(
+      client = await pool.connect();
+
+      await client.query("BEGIN");
+      transactionStarted = true;
+
+      const mechanic = await client.query(
         `SELECT id
          FROM users
          WHERE id = $1
            AND role = 'MECANICO'
-           AND is_active = TRUE`,
+           AND is_active = TRUE
+         FOR UPDATE`,
         [mechanicId]
       );
 
       if (mechanic.rowCount === 0) {
+        await client.query("ROLLBACK");
+        transactionStarted = false;
+
         res.status(400).json({
           success: false,
           message: "El mecánico no existe o no está activo",
@@ -216,7 +231,30 @@ router.post(
         return;
       }
 
-      const result = await pool.query(
+      const appointment = await client.query(
+        `SELECT id
+         FROM appointments
+         WHERE mechanic_id = $1
+           AND status = 'CONFIRMED'
+           AND starts_at < $3
+           AND ends_at > $2
+         LIMIT 1`,
+        [mechanicId, startsAt, endsAt]
+      );
+
+      if (appointment.rowCount! > 0) {
+        await client.query("ROLLBACK");
+        transactionStarted = false;
+
+        res.status(409).json({
+          success: false,
+          message:
+            "No se puede bloquear el horario porque existe una reserva confirmada",
+        });
+        return;
+      }
+
+      const result = await client.query(
         `INSERT INTO mechanic_blocks
           (mechanic_id, starts_at, ends_at, reason, created_by)
          VALUES ($1, $2, $3, $4, $5)
@@ -230,13 +268,22 @@ router.post(
         ]
       );
 
+      await client.query("COMMIT");
+      transactionStarted = false;
+
       res.status(201).json({
         success: true,
         message: "Bloqueo creado correctamente",
         data: result.rows[0],
       });
     } catch (error) {
+      if (transactionStarted && client) {
+        await client.query("ROLLBACK").catch(() => {});
+      }
+
       next(error);
+    } finally {
+      client?.release();
     }
   }
 );

@@ -49,7 +49,7 @@ const block = {
 
 describe("Gestión de horarios y bloqueos", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
 
     connectMock.mockResolvedValue({
       query: clientQueryMock,
@@ -183,18 +183,19 @@ describe("Gestión de horarios y bloqueos", () => {
 
     expect(response.status).toBe(400);
     expect(queryMock).toHaveBeenCalledTimes(1);
+    expect(connectMock).not.toHaveBeenCalled();
   });
 
   it("rechaza crear bloqueos para mecánicos inexistentes o inactivos", async () => {
-    queryMock
-      .mockResolvedValueOnce({
-        rows: [{ id: adminId, role: "ADMINISTRADOR" }],
-        rowCount: 1,
-      })
-      .mockResolvedValueOnce({
-        rows: [],
-        rowCount: 0,
-      });
+    queryMock.mockResolvedValueOnce({
+      rows: [{ id: adminId, role: "ADMINISTRADOR" }],
+      rowCount: 1,
+    });
+
+    clientQueryMock
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
+      .mockResolvedValueOnce({ rows: [], rowCount: 0 })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
 
     const response = await request(app)
       .post("/api/workshop/blocks")
@@ -208,22 +209,32 @@ describe("Gestión de horarios y bloqueos", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toContain("mecánico no existe");
+    expect(clientQueryMock).toHaveBeenCalledWith("BEGIN");
+    expect(clientQueryMock).toHaveBeenCalledWith("ROLLBACK");
+    expect(releaseMock).toHaveBeenCalledTimes(1);
   });
 
   it("crea un bloqueo para un mecánico activo", async () => {
-    queryMock
-      .mockResolvedValueOnce({
-        rows: [{ id: adminId, role: "ADMINISTRADOR" }],
-        rowCount: 1,
-      })
+    queryMock.mockResolvedValueOnce({
+      rows: [{ id: adminId, role: "ADMINISTRADOR" }],
+      rowCount: 1,
+    });
+
+    clientQueryMock
+      .mockResolvedValueOnce({ rows: [], rowCount: null })
       .mockResolvedValueOnce({
         rows: [{ id: mechanicId }],
         rowCount: 1,
       })
       .mockResolvedValueOnce({
+        rows: [],
+        rowCount: 0,
+      })
+      .mockResolvedValueOnce({
         rows: [block],
         rowCount: 1,
-      });
+      })
+      .mockResolvedValueOnce({ rows: [], rowCount: null });
 
     const response = await request(app)
       .post("/api/workshop/blocks")
@@ -237,7 +248,10 @@ describe("Gestión de horarios y bloqueos", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(queryMock.mock.calls[2][1][4]).toBe(adminId);
+    expect(clientQueryMock).toHaveBeenCalledWith("BEGIN");
+    expect(clientQueryMock).toHaveBeenCalledWith("COMMIT");
+    expect(clientQueryMock.mock.calls[3][1][4]).toBe(adminId);
+    expect(releaseMock).toHaveBeenCalledTimes(1);
   });
 
   it("rechaza eliminar un bloqueo con identificador inválido", async () => {

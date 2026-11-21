@@ -1,4 +1,4 @@
-﻿
+
 import express, {
   type ErrorRequestHandler,
 } from "express";
@@ -9,6 +9,7 @@ import servicesRoutes from "./routes/services.routes.js";
 import bicyclesRoutes from "./routes/bicycles.routes.js";
 import workshopRoutes from "./routes/workshop.routes.js";
 import appointmentsRoutes from "./routes/appointments.routes.js";
+import appointmentsBookingRoutes from "./routes/appointments.booking.routes.js";
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/api/workshop", workshopRoutes);
 
 // Rutas de disponibilidad y turnos.
 app.use("/api/appointments", appointmentsRoutes);
+app.use("/api/appointments", appointmentsBookingRoutes);
 
 // Ruta no encontrada.
 app.use((_req, res) => {
