@@ -22,7 +22,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T13 | Implementar disponibilidad | T11,T12 | intervalos correctos y pruebas | TODO |
 | T14 | Implementar reserva transaccional | T13 | no hay doble reserva bajo concurrencia | DONE |
 | T15 | Implementar cancelación | T14 | regla 12 horas y liberación de agenda | DONE |
-| T16 | Implementar asignación/reasignación | T14 | no se permiten conflictos | TODO |
+| T16 | Implementar asignación/reasignación | T14 | no se permiten conflictos | DONE |
 | T17 | Implementar recepción y órdenes | T14 | orden vinculada al turno | TODO |
 | T18 | Implementar diagnóstico | T17 | diagnóstico y permisos probados | TODO |
 | T19 | Implementar presupuestos | T18 | conceptos y total calculado en servidor | TODO |
