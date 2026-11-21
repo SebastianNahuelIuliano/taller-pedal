@@ -1,7 +1,10 @@
 
-import express from "express";
+import express, {
+  type ErrorRequestHandler,
+} from "express";
 import cors from "cors";
 import helmet from "helmet";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -13,7 +16,8 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "10kb" }));
+
 
 app.get("/api/health", (_req, res) => {
   res.status(200).json({
@@ -23,11 +27,32 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+// Rutas de autenticación
+app.use("/api/auth", authRoutes);
+
+// Ruta no encontrada
 app.use((_req, res) => {
   res.status(404).json({
     success: false,
     message: "Ruta no encontrada",
   });
 });
+
+// Manejo general de errores
+const errorHandler: ErrorRequestHandler = (
+  error,
+  _req,
+  res,
+  _next
+) => {
+  console.error("Error en la API:", error);
+
+  res.status(500).json({
+    success: false,
+    message: "Ocurrió un error interno en el servidor",
+  });
+};
+
+app.use(errorHandler);
 
 export default app;
