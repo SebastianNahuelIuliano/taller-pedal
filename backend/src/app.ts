@@ -1,4 +1,4 @@
-﻿
+
 import express, {
   type ErrorRequestHandler,
 } from "express";
@@ -12,6 +12,7 @@ import appointmentsRoutes from "./routes/appointments.routes.js";
 import appointmentsBookingRoutes from "./routes/appointments.booking.routes.js";
 import appointmentsCancellationRoutes from "./routes/appointments.cancellation.routes.js";
 import appointmentsAssignmentRoutes from "./routes/appointments.assignment.routes.js";
+import repairOrdersRoutes from "./routes/repair-orders.routes.js";
 
 const app = express();
 
@@ -33,7 +34,7 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-// Rutas de autenticaciÃƒÂ³n.
+// Rutas de autenticaciÃ³n.
 app.use("/api/auth", authRoutes);
 
 // Rutas de servicios.
@@ -50,6 +51,7 @@ app.use("/api/appointments", appointmentsRoutes);
 app.use("/api/appointments", appointmentsBookingRoutes);
 app.use("/api/appointments", appointmentsCancellationRoutes);
 app.use("/api/appointments", appointmentsAssignmentRoutes);
+app.use("/api/appointments", repairOrdersRoutes);
 
 // Ruta no encontrada.
 app.use((_req, res) => {
@@ -70,7 +72,7 @@ const errorHandler: ErrorRequestHandler = (
 
   res.status(500).json({
     success: false,
-    message: "OcurriÃƒÂ³ un error interno en el servidor",
+    message: "OcurriÃ³ un error interno en el servidor",
   });
 };
 
