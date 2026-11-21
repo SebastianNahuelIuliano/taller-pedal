@@ -1,4 +1,4 @@
-
+﻿
 import express, {
   type ErrorRequestHandler,
 } from "express";
@@ -7,6 +7,7 @@ import helmet from "helmet";
 import authRoutes from "./routes/auth.routes.js";
 import servicesRoutes from "./routes/services.routes.js";
 import bicyclesRoutes from "./routes/bicycles.routes.js";
+import workshopRoutes from "./routes/workshop.routes.js";
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-// Rutas de autenticación.
+// Rutas de autenticaciÃ³n.
 app.use("/api/auth", authRoutes);
 
 // Rutas de servicios.
@@ -36,6 +37,9 @@ app.use("/api/services", servicesRoutes);
 
 // Rutas de bicicletas.
 app.use("/api/bicycles", bicyclesRoutes);
+
+// Rutas de horarios y bloqueos.
+app.use("/api/workshop", workshopRoutes);
 
 // Ruta no encontrada.
 app.use((_req, res) => {
@@ -56,7 +60,7 @@ const errorHandler: ErrorRequestHandler = (
 
   res.status(500).json({
     success: false,
-    message: "Ocurrió un error interno en el servidor",
+    message: "OcurriÃ³ un error interno en el servidor",
   });
 };
 
