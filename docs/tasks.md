@@ -1,5 +1,4 @@
-
-# Plan de tareas â€” Taller Pedal
+﻿ Plan de tareas â€” Taller Pedal
 
 **Regla:** una tarea se marca DONE solamente cuando cumple sus criterios, pruebas y commit. No marcar tareas futuras como hechas anticipadamente.
 
@@ -32,7 +31,7 @@ Estados: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 | T23 | Implementar consumo de repuestos | T21,T22 | stock y movimiento atÃ³micos | DONDE |
 | T24 | Implementar historial | T17,T21,T23 | cliente ve solo sus registros | DONE |
 | T25 | Inicializar frontend React | T03 | Vite, TS y estructura compilan | DONE |
-| T26 | Implementar autenticaciÃ³n UI | T08,T25 | registro/login/logout integrados | TODO |
+| T26 | Implementar autenticaciÃ³n UI | T08,T25 | registro/login/logout integrados | DONE |
 | T27 | Implementar pantallas cliente | T11,T13,T14 | bicicletas, catÃ¡logo, reserva, turnos | TODO |
 | T28 | Implementar pantallas mecÃ¡nico | T17,T18,T21 | agenda, diagnÃ³stico y estados | TODO |
 | T29 | Implementar panel administrador | T10,T12,T16,T22 | servicios, agenda, mecÃ¡nicos e inventario | TODO |
