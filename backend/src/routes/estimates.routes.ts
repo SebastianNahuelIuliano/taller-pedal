@@ -322,9 +322,9 @@ router.post(
            $2,
            jsonb_build_object(
              'estimate_id', $3::text,
-             'version', $4,
+             'version', $4::integer,
              'total', $5::text,
-             'items_count', $6
+             'items_count', $6::integer
            )
          )`,
         [

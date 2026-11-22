@@ -201,8 +201,8 @@ router.patch(
            $3,
            jsonb_build_object(
              'estimate_id', $4::text,
-             'version', $5,
-             'decision', $6,
+             'version', $5::integer,
+             'decision', $6::text,
              'total', $7::text
            )
          )`,
