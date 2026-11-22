@@ -275,3 +275,116 @@ export async function getMyAppointments(): Promise<Appointment[]> {
   const result = await request<MyAppointmentsResponse>('/appointments/mine')
   return result.data
 }
+
+export interface MechanicAppointment {
+  id: string
+  client_id: string
+  client_name: string
+  bicycle_id: string
+  bicycle_brand: string
+  bicycle_model: string
+  bicycle_type: string
+  service_id: string
+  service_name: string
+  duration_minutes_snapshot: number
+  price_snapshot: number
+  starts_at: string
+  ends_at: string
+  appointment_status: string
+  repair_order_id: string | null
+  repair_status: string
+}
+
+interface MechanicAppointmentsResponse {
+  success: boolean
+  data: MechanicAppointment[]
+}
+
+interface RepairOrderResponse {
+  success: boolean
+  message: string
+  data: {
+    id: string
+    appointment_id: string
+    status: string
+    received_at: string
+  }
+}
+
+// Consultar la agenda del mecánico autenticado.
+export async function getMechanicAppointments(): Promise<MechanicAppointment[]> {
+  const result = await request<MechanicAppointmentsResponse>(
+    '/appointments/mechanic/mine',
+  )
+  return result.data
+}
+
+// Registrar la recepción de una bicicleta y crear su orden de reparación.
+export async function receiveAppointment(
+  id: string,
+  data: { visibleCondition: string; accessoriesReceived?: string },
+): Promise<RepairOrderResponse['data']> {
+  const result = await request<RepairOrderResponse>(
+    `/appointments/${id}/receive`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+  )
+  return result.data
+}
+
+export interface RepairDiagnosis {
+  id: string
+  repair_order_id: string
+  mechanic_id: string
+  description: string
+  recommended_tasks: string | null
+  created_at: string
+}
+
+interface RepairDiagnosisResponse {
+  success: boolean
+  message: string
+  data: RepairDiagnosis
+}
+
+interface RepairStatusResponse {
+  success: boolean
+  message: string
+  data: {
+    id: string
+    status: string
+    updated_at: string
+  }
+}
+
+// Registrar el diagnóstico de una orden de reparación.
+export async function createRepairDiagnosis(
+  id: string,
+  data: { description: string; recommendedTasks?: string },
+): Promise<RepairDiagnosis> {
+  const result = await request<RepairDiagnosisResponse>(
+    `/repair-orders/${id}/diagnoses`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+  )
+  return result.data
+}
+
+// Actualizar el estado de una orden de reparación.
+export async function updateRepairStatus(
+  id: string,
+  data: { status: string; notes?: string },
+): Promise<RepairStatusResponse['data']> {
+  const result = await request<RepairStatusResponse>(
+    `/repair-orders/${id}/status`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    },
+  )
+  return result.data
+}

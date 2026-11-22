@@ -90,6 +90,49 @@ function isValidDate(value: string): boolean {
 }
 
 
+// Consultar la agenda del mecanico autenticado.
+router.get(
+  "/mechanic/mine",
+  authenticateToken,
+  authorizeRoles("MECANICO"),
+  async (req, res, next) => {
+    try {
+      const result = await pool.query(
+        `SELECT
+          a.id,
+          a.client_id,
+          c.full_name AS client_name,
+          a.bicycle_id,
+          b.brand AS bicycle_brand,
+          b.model AS bicycle_model,
+          b.bicycle_type,
+          a.service_id,
+          a.service_name_snapshot AS service_name,
+          a.duration_minutes_snapshot,
+          a.price_snapshot,
+          a.starts_at,
+          a.ends_at,
+          a.status AS appointment_status,
+          ro.id AS repair_order_id,
+          COALESCE(ro.status, 'NOT_RECEIVED') AS repair_status
+        FROM appointments a
+        INNER JOIN users c ON c.id = a.client_id
+        INNER JOIN bicycles b ON b.id = a.bicycle_id
+        LEFT JOIN repair_orders ro ON ro.appointment_id = a.id
+        WHERE a.mechanic_id = $1
+        ORDER BY a.starts_at ASC`,
+        [req.user!.id]
+      );
+
+      res.status(200).json({
+        success: true,
+        data: result.rows,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 // Consultar los turnos del cliente autenticado.
 router.get(
   "/mine",

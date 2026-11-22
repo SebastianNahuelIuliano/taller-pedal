@@ -980,3 +980,164 @@
   color: #1e40af;
 }
 
+
+/* Panel del mecánico */
+.mechanic-section {
+  margin-top: 2rem;
+  padding: 1.75rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+}
+
+.mechanic-heading,
+.mechanic-card-top,
+.mechanic-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mechanic-heading {
+  margin-bottom: 1.5rem;
+}
+
+.mechanic-heading h2 {
+  margin: 0 0 0.4rem;
+}
+
+.mechanic-heading p,
+.mechanic-date {
+  color: #64748b;
+  margin: 0;
+}
+
+.mechanic-refresh,
+.mechanic-reception button,
+.mechanic-form-actions button {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  background: #166534;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mechanic-appointments {
+  display: grid;
+  gap: 1rem;
+}
+
+.mechanic-appointment-card {
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.mechanic-card-top h3 {
+  margin: 0 0 0.4rem;
+}
+
+.mechanic-status {
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.mechanic-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem 1rem;
+  margin: 1.25rem 0;
+}
+
+.mechanic-details p {
+  margin: 0;
+  color: #475569;
+}
+
+.mechanic-reception-form {
+  display: grid;
+  gap: 0.65rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.mechanic-reception-form h4 {
+  margin: 0 0 0.25rem;
+}
+
+.mechanic-reception-form label {
+  font-weight: 600;
+}
+
+.mechanic-reception-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  resize: vertical;
+}
+
+.mechanic-form-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.mechanic-form-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mechanic-form-actions .mechanic-cancel {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.mechanic-feedback {
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.mechanic-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.mechanic-success,
+.mechanic-received {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.mechanic-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  .mechanic-section {
+    padding: 1rem;
+  }
+
+  .mechanic-heading,
+  .mechanic-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .mechanic-details {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -1,10 +1,11 @@
-﻿import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useAuth } from './context/useAuth'
 import './App.css'
 import BicycleManager from './components/BicycleManager'
 import ServiceCatalog from './components/ServiceCatalog'
 import AppointmentBooking from './components/AppointmentBooking'
 import MyAppointments from './components/MyAppointments'
+import MechanicDashboard from './components/MechanicDashboard'
 
 
 function App() {
@@ -102,6 +103,7 @@ function App() {
         {user.role === 'CLIENTE' && <ServiceCatalog />}
         {user.role === 'CLIENTE' && <AppointmentBooking />}
         {user.role === 'CLIENTE' && <MyAppointments />}
+        {user.role === 'MECANICO' && <MechanicDashboard />}
       </main>
     )
   }
@@ -261,4 +263,3 @@ function App() {
 }
 
 export default App
-
