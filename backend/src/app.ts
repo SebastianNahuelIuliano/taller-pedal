@@ -43,6 +43,7 @@ app.get("/api/health", (_req, res) => {
 
 // Rutas de autenticaciÃ³n.
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Rutas de servicios.
 app.use("/api/services", servicesRoutes);
