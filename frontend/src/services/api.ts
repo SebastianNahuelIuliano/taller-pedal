@@ -1,4 +1,5 @@
-﻿const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+﻿
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 const TOKEN_KEY = 'taller_pedal_token'
 
 export interface User {
@@ -9,6 +10,24 @@ export interface User {
   role: 'CLIENTE' | 'MECANICO' | 'ADMINISTRADOR'
   isActive: boolean
   createdAt?: string
+}
+
+export interface Bicycle {
+  id: string
+  brand: string
+  model: string
+  bicycle_type: string
+  serial_number: string | null
+  observations: string | null
+  created_at: string
+}
+
+export interface BicycleInput {
+  brand: string
+  model: string
+  bicycleType: string
+  serialNumber?: string
+  observations?: string
 }
 
 interface AuthResponse {
@@ -25,6 +44,22 @@ interface ProfileResponse {
   data: {
     user: User
   }
+}
+
+interface BicyclesResponse {
+  success: boolean
+  data: Bicycle[]
+}
+
+interface BicycleResponse {
+  success: boolean
+  message: string
+  data: Bicycle
+}
+
+interface MessageResponse {
+  success: boolean
+  message: string
 }
 
 export function getToken(): string | null {
@@ -93,3 +128,150 @@ export async function getProfile(): Promise<User> {
   return result.data.user
 }
 
+// Listar bicicletas del usuario autenticado.
+export async function getBicycles(): Promise<Bicycle[]> {
+  const result = await request<BicyclesResponse>('/bicycles')
+  return result.data
+}
+
+// Registrar una bicicleta.
+export async function createBicycle(data: BicycleInput): Promise<Bicycle> {
+  const result = await request<BicycleResponse>('/bicycles', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
+  return result.data
+}
+
+// Actualizar una bicicleta.
+export async function updateBicycle(
+  id: string,
+  data: BicycleInput,
+): Promise<Bicycle> {
+  const result = await request<BicycleResponse>(`/bicycles/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+
+  return result.data
+}
+
+// Eliminar una bicicleta.
+export async function deleteBicycle(id: string): Promise<string> {
+  const result = await request<MessageResponse>(`/bicycles/${id}`, {
+    method: 'DELETE',
+  })
+
+  return result.message
+}
+
+export interface Service {
+  id: string
+  name: string
+  description: string | null
+  reference_price: number
+  duration_minutes: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+interface ServicesResponse {
+  success: boolean
+  data: Service[]
+}
+
+// Consultar el catálogo público de servicios activos.
+export async function getServices(): Promise<Service[]> {
+  const result = await request<ServicesResponse>('/services')
+  return result.data
+}
+
+export interface AvailableMechanic {
+  id: string
+  name: string
+}
+
+export interface AvailabilitySlot {
+  startsAt: string
+  endsAt: string
+  availableMechanics: AvailableMechanic[]
+}
+
+interface AvailabilityResponse {
+  success: boolean
+  data: {
+    date: string
+    service: {
+      id: string
+      name: string
+      durationMinutes: number
+    }
+    availableSlots: AvailabilitySlot[]
+  }
+}
+
+export interface AppointmentInput {
+  bicycleId: string
+  serviceId: string
+  mechanicId: string
+  startsAt: string
+}
+
+export interface Appointment {
+  id: string
+  client_id: string
+  bicycle_id: string
+  service_id: string
+  mechanic_id: string
+  starts_at: string
+  ends_at: string
+  service_name_snapshot: string
+  duration_minutes_snapshot: number
+  price_snapshot: number
+  status: string
+  created_at: string
+}
+
+interface AppointmentResponse {
+  success: boolean
+  message: string
+  data: Appointment
+}
+
+// Consultar horarios y mecánicos disponibles para un servicio y fecha.
+export async function getAvailability(
+  date: string,
+  serviceId: string,
+): Promise<AvailabilitySlot[]> {
+  const params = new URLSearchParams({ date, serviceId })
+  const result = await request<AvailabilityResponse>(
+    `/appointments/availability?${params.toString()}`,
+  )
+
+  return result.data.availableSlots
+}
+
+// Confirmar una reserva.
+export async function createAppointment(
+  data: AppointmentInput,
+): Promise<Appointment> {
+  const result = await request<AppointmentResponse>('/appointments', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
+  return result.data
+}
+
+interface MyAppointmentsResponse {
+  success: boolean
+  data: Appointment[]
+}
+
+// Consultar los turnos del cliente autenticado.
+export async function getMyAppointments(): Promise<Appointment[]> {
+  const result = await request<MyAppointmentsResponse>('/appointments/mine')
+  return result.data
+}

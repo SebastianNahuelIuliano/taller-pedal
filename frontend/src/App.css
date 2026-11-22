@@ -1,4 +1,4 @@
-#root {
+﻿#root {
   min-height: 100vh;
 }
 
@@ -439,4 +439,544 @@
   }
 }
 
+
+
+/* GestiÃ³n de bicicletas */
+
+.bicycle-section {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto 70px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.section-heading h2 {
+  margin: 0 0 8px;
+  color: #20291e;
+  font-family: 'Manrope', sans-serif;
+  font-size: 27px;
+  letter-spacing: -1px;
+}
+
+.section-heading p,
+.bicycle-form-card > p {
+  margin: 0;
+  color: #778071;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.bicycle-count {
+  padding: 9px 13px;
+  border-radius: 20px;
+  color: #547d2d;
+  background: #edf5e4;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.bicycle-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+
+.bicycle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.bicycle-card,
+.bicycle-form-card {
+  padding: 22px;
+  border: 1px solid #e4e9dc;
+  border-radius: 15px;
+  background: white;
+  box-shadow: 0 8px 25px rgba(37, 50, 28, .035);
+}
+
+.bicycle-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.bicycle-icon {
+  display: grid;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  background: #edf5e4;
+  font-size: 23px;
+}
+
+.bicycle-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bicycle-info h3,
+.bicycle-form-card h3 {
+  margin: 0;
+  color: #303b29;
+  font-size: 15px;
+}
+
+.bicycle-info p,
+.bicycle-info span {
+  margin: 0;
+  color: #778071;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.bicycle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.secondary-button,
+.danger-button,
+.cancel-button {
+  padding: 8px 11px;
+  border: 1px solid #dce1d6;
+  border-radius: 8px;
+  color: #53604c;
+  background: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.secondary-button:hover {
+  border-color: #9bbd76;
+  background: #f7faf3;
+}
+
+.danger-button {
+  border-color: #f0ceca;
+  color: #a33f35;
+}
+
+.danger-button:hover {
+  background: #fff1ef;
+}
+
+.bicycle-form-card h3 {
+  margin-bottom: 7px;
+  font-size: 17px;
+}
+
+.bicycle-form-card > p {
+  margin-bottom: 20px;
+}
+
+.bicycle-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bicycle-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #394333;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bicycle-form input,
+.bicycle-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dce1d6;
+  border-radius: 9px;
+  outline: none;
+  color: #20251f;
+  background: white;
+  font: inherit;
+  font-size: 13px;
+  resize: vertical;
+}
+
+.bicycle-form input:focus,
+.bicycle-form textarea:focus {
+  border-color: #8dbb50;
+  box-shadow: 0 0 0 3px rgba(141, 187, 80, .14);
+}
+
+.bicycle-form .submit-button {
+  margin-top: 3px;
+}
+
+.cancel-button {
+  min-height: 42px;
+  font-size: 12px;
+}
+
+.empty-state {
+  padding: 35px 20px;
+  border: 1px dashed #dce4d3;
+  border-radius: 14px;
+  color: #778071;
+  background: white;
+  text-align: center;
+  font-size: 13px;
+}
+
+.empty-state h3 {
+  margin: 10px 0 6px;
+  color: #303b29;
+  font-size: 15px;
+}
+
+.empty-state p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.empty-icon {
+  font-size: 32px;
+}
+
+@media (max-width: 760px) {
+  .bicycle-content {
+    grid-template-columns: 1fr;
+  }
+
+  .bicycle-section {
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bicycle-card {
+    flex-wrap: wrap;
+  }
+
+  .bicycle-actions {
+    width: 100%;
+    padding-left: 59px;
+  }
+}
+
+/* CatÃ¡logo de servicios */
+.service-section {
+  margin: 40px 0;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid #e5e9df;
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 8px 25px rgba(37, 50, 28, .035);
+}
+
+.service-card h3 {
+  margin: 0;
+  color: #303b29;
+  font-size: 17px;
+}
+
+.service-description {
+  min-height: 42px;
+  margin: 0;
+  color: #778071;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.service-details {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-top: 13px;
+  border-top: 1px solid #edf0e9;
+  color: #778071;
+  font-size: 12px;
+}
+
+.service-details strong {
+  color: #394333;
+}
+
+.feedback-message {
+  color: #778071;
+  font-size: 13px;
+}
+
+.feedback-error {
+  padding: 13px;
+  border: 1px solid #f0ceca;
+  border-radius: 9px;
+  color: #a33f35;
+  background: #fff1ef;
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .service-card {
+    padding: 18px;
+  }
+}
+
+/* Reserva de turnos */
+.appointment-section {
+  margin: 40px 0;
+  padding: 26px;
+  border: 1px solid #e5e9df;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(37, 50, 28, .035);
+}
+
+.appointment-heading {
+  margin-bottom: 24px;
+}
+
+.appointment-heading h2 {
+  margin: 0 0 8px;
+  color: #303b29;
+  font-size: 22px;
+}
+
+.appointment-heading p {
+  margin: 0;
+  color: #778071;
+  font-size: 14px;
+}
+
+.appointment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 620px;
+}
+
+.appointment-form > label,
+.appointment-mechanics label {
+  color: #394333;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.appointment-form select,
+.appointment-form input[type="date"],
+.appointment-mechanics select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #dfe5d9;
+  border-radius: 9px;
+  background: #fff;
+  color: #303b29;
+  font: inherit;
+  font-size: 14px;
+}
+
+.appointment-form select:focus,
+.appointment-form input:focus,
+.appointment-mechanics select:focus {
+  outline: 2px solid rgba(91, 119, 69, .2);
+  border-color: #718b5b;
+}
+
+.appointment-availability {
+  margin-top: 12px;
+}
+
+.appointment-availability h3,
+.appointment-confirmation h3 {
+  margin: 0 0 14px;
+  color: #303b29;
+  font-size: 16px;
+}
+
+.appointment-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 10px;
+}
+
+.appointment-slot {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid #e5e9df;
+  border-radius: 9px;
+  background: #fff;
+  color: #394333;
+  cursor: pointer;
+  font-size: 13px;
+  transition: border-color .2s, background .2s;
+}
+
+.appointment-slot:hover {
+  border-color: #91a47d;
+}
+
+.appointment-slot-selected {
+  border-color: #718b5b;
+  background: #f1f5ed;
+}
+
+.appointment-slot input {
+  accent-color: #5d7848;
+}
+
+.appointment-mechanics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.appointment-form button {
+  min-height: 46px;
+  margin-top: 12px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 9px;
+  background: #526d40;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.appointment-form button:hover:not(:disabled) {
+  background: #405832;
+}
+
+.appointment-form button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.appointment-confirmation {
+  max-width: 620px;
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid #dce8d3;
+  border-radius: 12px;
+  background: #f5f8f2;
+}
+
+.appointment-confirmation p {
+  margin: 9px 0;
+  color: #596451;
+  font-size: 13px;
+}
+
+.appointment-confirmation strong {
+  color: #394333;
+}
+
+@media (max-width: 480px) {
+  .appointment-section {
+    padding: 18px;
+  }
+
+  .appointment-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mis turnos */
+.my-appointments {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.my-appointments h2 {
+  margin: 0 0 1.25rem;
+}
+
+.appointments-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.appointment-card {
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+}
+
+.appointment-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.appointment-card-header h3 {
+  margin: 0;
+}
+
+.appointment-card p {
+  margin: 0.5rem 0;
+}
+
+.appointment-status {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-completed {
+  background: #dbeafe;
+  color: #1e40af;
+}
 

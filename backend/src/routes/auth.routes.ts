@@ -6,7 +6,7 @@ import {
   hashPassword,
   verifyPassword,
 } from "../utils/security.js";
-import { authenticateToken } from "../middlewares/auth.middleware.js";
+import { authenticateToken, authorizeRoles } from "../middlewares/auth.middleware.js";
 import type { UserRole } from "../types/auth.js";
 
 const router = Router();
@@ -127,6 +127,85 @@ router.post("/register", async (req, res, next) => {
 });
 
 // INICIO DE SESIÓN
+
+ // CREAR CUENTA DE MECÁNICO (SOLO ADMINISTRADORES)
+router.post(
+  "/mechanics",
+  authenticateToken,
+  authorizeRoles("ADMINISTRADOR"),
+  async (req, res, next) => {
+    try {
+      const { fullName, email, password, phone } = req.body ?? {};
+
+      if (
+        typeof fullName !== "string" ||
+        fullName.trim().length < 2 ||
+        fullName.trim().length > 150 ||
+        typeof email !== "string" ||
+        email.trim().length > 255 ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
+        typeof password !== "string" ||
+        password.length < 8 ||
+        password.length > 128 ||
+        (phone !== undefined &&
+          phone !== null &&
+          (typeof phone !== "string" || phone.trim().length > 40))
+      ) {
+        res.status(400).json({
+          success: false,
+          message: "Los datos del mecánico no son válidos",
+        });
+        return;
+      }
+
+      const passwordHash = await hashPassword(password);
+
+      const result = await pool.query(
+        `INSERT INTO users (
+          full_name, email, phone, password_hash, role
+        )
+        VALUES ($1, $2, $3, $4, 'MECANICO')
+        RETURNING
+          id,
+          full_name AS "fullName",
+          email,
+          phone,
+          role,
+          is_active AS "isActive",
+          created_at AS "createdAt"`,
+        [
+          fullName.trim(),
+          email.trim().toLowerCase(),
+          typeof phone === "string" && phone.trim()
+            ? phone.trim()
+            : null,
+          passwordHash,
+        ]
+      );
+
+      res.status(201).json({
+        success: true,
+        message: "Mecánico creado correctamente",
+        data: result.rows[0],
+      });
+    } catch (error) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === "23505"
+      ) {
+        res.status(409).json({
+          success: false,
+          message: "Ya existe una cuenta con ese correo electrónico",
+        });
+        return;
+      }
+
+      next(error);
+    }
+  }
+);
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body ?? {};

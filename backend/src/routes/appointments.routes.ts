@@ -1,6 +1,7 @@
 
 import { Router } from "express";
 import { pool } from "../config/database.js";
+import { authenticateToken, authorizeRoles } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -88,6 +89,43 @@ function isValidDate(value: string): boolean {
   );
 }
 
+
+// Consultar los turnos del cliente autenticado.
+router.get(
+  "/mine",
+  authenticateToken,
+  authorizeRoles("CLIENTE"),
+  async (req, res, next) => {
+    try {
+      const result = await pool.query(
+        `SELECT
+          id,
+          client_id,
+          bicycle_id,
+          service_id,
+          mechanic_id,
+          starts_at,
+          ends_at,
+          service_name_snapshot,
+          duration_minutes_snapshot,
+          price_snapshot,
+          status,
+          created_at
+        FROM appointments
+        WHERE client_id = $1
+        ORDER BY starts_at DESC`,
+        [req.user!.id]
+      );
+
+      res.status(200).json({
+        success: true,
+        data: result.rows,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 // Consultar disponibilidad para un servicio y una fecha.
 router.get("/availability", async (req, res, next) => {
   try {

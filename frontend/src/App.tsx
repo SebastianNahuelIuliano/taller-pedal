@@ -1,6 +1,11 @@
 ﻿import { useState, type FormEvent } from 'react'
 import { useAuth } from './context/useAuth'
 import './App.css'
+import BicycleManager from './components/BicycleManager'
+import ServiceCatalog from './components/ServiceCatalog'
+import AppointmentBooking from './components/AppointmentBooking'
+import MyAppointments from './components/MyAppointments'
+
 
 function App() {
   const { user, loading, login, register, logout } = useAuth()
@@ -93,6 +98,10 @@ function App() {
             </div>
           </div>
         </section>
+        {user.role === 'CLIENTE' && <BicycleManager />}
+        {user.role === 'CLIENTE' && <ServiceCatalog />}
+        {user.role === 'CLIENTE' && <AppointmentBooking />}
+        {user.role === 'CLIENTE' && <MyAppointments />}
       </main>
     )
   }
@@ -252,5 +261,4 @@ function App() {
 }
 
 export default App
-
 
