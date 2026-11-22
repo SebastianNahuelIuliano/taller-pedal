@@ -5,6 +5,7 @@ import express, {
 import cors from "cors";
 import helmet from "helmet";
 import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import servicesRoutes from "./routes/services.routes.js";
 import bicyclesRoutes from "./routes/bicycles.routes.js";
 import workshopRoutes from "./routes/workshop.routes.js";

@@ -6,6 +6,7 @@ import ServiceCatalog from './components/ServiceCatalog'
 import AppointmentBooking from './components/AppointmentBooking'
 import MyAppointments from './components/MyAppointments'
 import MechanicDashboard from './components/MechanicDashboard'
+import AdminDashboard from './components/AdminDashboard'
 
 
 function App() {
@@ -104,6 +105,7 @@ function App() {
         {user.role === 'CLIENTE' && <AppointmentBooking />}
         {user.role === 'CLIENTE' && <MyAppointments />}
         {user.role === 'MECANICO' && <MechanicDashboard />}
+        {user.role === 'ADMINISTRADOR' && <AdminDashboard />}
       </main>
     )
   }

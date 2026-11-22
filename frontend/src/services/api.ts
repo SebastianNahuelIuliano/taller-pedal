@@ -458,3 +458,264 @@ export async function updateRepairStatus(
   )
   return result.data
 }
+
+
+// ==================== ADMINISTRACION ====================
+
+export interface AdminMechanic {
+  id: string
+  full_name: string
+  email: string
+  phone: string | null
+  role: string
+  is_active: boolean
+  created_at: string
+}
+
+export interface AdminAppointment {
+  id: string
+  client_id: string
+  client_name: string
+  client_email: string
+  bicycle_id: string
+  bicycle_brand: string
+  bicycle_model: string
+  bicycle_type: string
+  mechanic_id: string
+  mechanic_name: string
+  service_name_snapshot: string
+  starts_at: string
+  ends_at: string
+  status: string
+  repair_order_id: string | null
+  repair_status: string | null
+}
+
+export interface SparePart {
+  id: string
+  code: string
+  name: string
+  description: string | null
+  reference_price: number
+  quantity_available: number
+  minimum_stock: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface WorkshopHour {
+  day_of_week: number
+  opens_at: string
+  closes_at: string
+  is_closed: boolean
+}
+
+export interface MechanicBlock {
+  id: string
+  mechanic_id: string
+  mechanic_name: string
+  starts_at: string
+  ends_at: string
+  reason: string | null
+  created_by: string
+  created_at: string
+}
+
+interface DataListResponse<T> {
+  success: boolean
+  data: T[]
+}
+
+interface DataResponse<T> {
+  success: boolean
+  message?: string
+  data: T
+}
+
+export async function getAdminServices(): Promise<Service[]> {
+  const result = await request<DataListResponse<Service>>('/services/admin')
+  return result.data
+}
+
+export async function createService(data: {
+  name: string
+  description?: string
+  referencePrice: number
+  durationMinutes: number
+}): Promise<Service> {
+  const result = await request<DataResponse<Service>>('/services', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return result.data
+}
+
+export async function updateService(
+  id: string,
+  data: {
+    name: string
+    description?: string
+    referencePrice: number
+    durationMinutes: number
+  },
+): Promise<Service> {
+  const result = await request<DataResponse<Service>>(`/services/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+  return result.data
+}
+
+export async function setServiceStatus(
+  id: string,
+  isActive: boolean,
+): Promise<Service> {
+  const result = await request<DataResponse<Service>>(
+    `/services/${id}/status`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    },
+  )
+  return result.data
+}
+
+export async function getAdminSpareParts(): Promise<SparePart[]> {
+  const result = await request<DataListResponse<SparePart>>('/spare-parts/admin')
+  return result.data
+}
+
+export async function createSparePart(data: {
+  code: string
+  name: string
+  description?: string
+  referencePrice: number
+  quantityAvailable: number
+  minimumStock: number
+}): Promise<SparePart> {
+  const result = await request<DataResponse<SparePart>>('/spare-parts', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return result.data
+}
+
+export async function updateSparePart(
+  id: string,
+  data: {
+    code: string
+    name: string
+    description?: string
+    referencePrice: number
+    quantityAvailable: number
+    minimumStock: number
+  },
+): Promise<SparePart> {
+  const result = await request<DataResponse<SparePart>>(
+    `/spare-parts/${id}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    },
+  )
+  return result.data
+}
+
+export async function setSparePartStatus(
+  id: string,
+  isActive: boolean,
+): Promise<SparePart> {
+  const result = await request<DataResponse<SparePart>>(
+    `/spare-parts/${id}/status`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    },
+  )
+  return result.data
+}
+
+export async function getAdminMechanics(): Promise<AdminMechanic[]> {
+  const result = await request<DataListResponse<AdminMechanic>>('/admin/mechanics')
+  return result.data
+}
+
+export async function createMechanic(data: {
+  fullName: string
+  email: string
+  password: string
+  phone?: string
+}): Promise<User> {
+  const result = await request<DataResponse<User>>('/auth/mechanics', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+  return result.data
+}
+
+export async function getAdminAppointments(): Promise<AdminAppointment[]> {
+  const result = await request<DataListResponse<AdminAppointment>>(
+    '/admin/appointments',
+  )
+  return result.data
+}
+
+export async function reassignAppointment(
+  appointmentId: string,
+  mechanicId: string,
+): Promise<void> {
+  await request(`/appointments/${appointmentId}/assign`, {
+    method: 'PATCH',
+    body: JSON.stringify({ mechanicId }),
+  })
+}
+
+export async function getWorkshopHours(): Promise<WorkshopHour[]> {
+  const result = await request<DataListResponse<WorkshopHour>>('/workshop/hours')
+  return result.data
+}
+
+export async function updateWorkshopHours(
+  hours: {
+    dayOfWeek: number
+    opensAt: string
+    closesAt: string
+    isClosed: boolean
+  }[],
+): Promise<WorkshopHour[]> {
+  const result = await request<DataListResponse<WorkshopHour>>('/workshop/hours', {
+    method: 'PUT',
+    body: JSON.stringify({ hours }),
+  })
+  return result.data
+}
+
+export async function getMechanicBlocks(): Promise<MechanicBlock[]> {
+  const result = await request<DataListResponse<MechanicBlock>>(
+    '/workshop/blocks',
+  )
+  return result.data
+}
+
+export async function createMechanicBlock(data: {
+  mechanicId: string
+  startsAt: string
+  endsAt: string
+  reason?: string
+}): Promise<MechanicBlock> {
+  const result = await request<DataResponse<MechanicBlock>>(
+    '/workshop/blocks',
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+  )
+  return result.data
+}
+
+export async function deleteMechanicBlock(id: string): Promise<void> {
+  await request(`/workshop/blocks/${id}`, {
+    method: 'DELETE',
+  })
+}
