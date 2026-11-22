@@ -1,9 +1,12 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   getMechanicAppointments,
   receiveAppointment,
   createRepairDiagnosis,
   updateRepairStatus,
+  getEstimates,
+  createEstimate,
+  type Estimate,
   type MechanicAppointment,
 } from '../services/api'
 
@@ -14,6 +17,14 @@ function formatDate(value: string): string {
     month: 'long',
     year: 'numeric',
   })
+}
+
+function formatPrice(value: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits: 2,
+  }).format(value)
 }
 
 function formatTime(value: string): string {
@@ -64,6 +75,11 @@ function MechanicDashboard() {
   const [nextStatus, setNextStatus] = useState('')
   const [statusNotes, setStatusNotes] = useState('')
   const [saving, setSaving] = useState(false)
+  const [estimateMap, setEstimateMap] = useState<Record<string, Estimate[]>>({})
+  const [estimateId, setEstimateId] = useState<string | null>(null)
+  const [estimateDescription, setEstimateDescription] = useState('')
+  const [estimateQuantity, setEstimateQuantity] = useState('1')
+  const [estimatePrice, setEstimatePrice] = useState('')
 
   async function loadAppointments() {
     setLoading(true)
@@ -82,8 +98,21 @@ function MechanicDashboard() {
     let cancelled = false
 
     getMechanicAppointments()
-      .then((data) => {
-        if (!cancelled) setAppointments(data)
+      .then(async (data) => {
+        if (cancelled) return
+        setAppointments(data)
+        const orders = data.filter((item) => item.repair_order_id)
+        const results = await Promise.all(
+          orders.map(async (item) => ({
+            id: item.repair_order_id!,
+            estimates: await getEstimates(item.repair_order_id!),
+          })),
+        )
+        if (!cancelled) {
+          setEstimateMap(Object.fromEntries(
+            results.map((item) => [item.id, item.estimates]),
+          ))
+        }
       })
       .catch((err) => {
         if (!cancelled) {
@@ -169,6 +198,55 @@ function MechanicDashboard() {
     }
   }
 
+  async function handleCreateEstimate(orderId: string) {
+    const quantity = Number(estimateQuantity)
+    const unitPrice = Number(estimatePrice)
+
+    if (!estimateDescription.trim()) {
+      setError('Ingresá la descripción del concepto.')
+      return
+    }
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      setError('La cantidad debe ser mayor que cero.')
+      return
+    }
+    if (!Number.isFinite(unitPrice) || unitPrice < 0 || !estimatePrice.trim()) {
+      setError('Ingresá un precio unitario válido.')
+      return
+    }
+
+    setSaving(true)
+    setError('')
+    setMessage('')
+    try {
+      const estimate = await createEstimate(orderId, [{
+        description: estimateDescription.trim(),
+        quantity,
+        unitPrice,
+      }])
+      setEstimateMap((current) => ({
+        ...current,
+        [orderId]: [...(current[orderId] ?? []), estimate],
+      }))
+      setAppointments((current) =>
+        current.map((item) =>
+          item.repair_order_id === orderId
+            ? { ...item, repair_status: 'WAITING_APPROVAL' }
+            : item,
+        ),
+      )
+      setEstimateId(null)
+      setEstimateDescription('')
+      setEstimateQuantity('1')
+      setEstimatePrice('')
+      setMessage(`Presupuesto versión ${estimate.version} enviado al cliente.`)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'No se pudo crear el presupuesto')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   async function handleStatusChange(id: string) {
     if (!nextStatus) {
       setError('Seleccioná el nuevo estado de la reparación.')
@@ -229,6 +307,10 @@ function MechanicDashboard() {
         <div className="mechanic-appointments">
           {appointments.map((appointment) => {
             const transitions = availableTransitions(appointment.repair_status)
+            const orderEstimates = appointment.repair_order_id
+              ? estimateMap[appointment.repair_order_id] ?? []
+              : []
+            const latestEstimate = orderEstimates[orderEstimates.length - 1]
 
             return (
               <article className="mechanic-appointment-card" key={appointment.id}>
@@ -366,6 +448,84 @@ function MechanicDashboard() {
                             Registrar diagnóstico
                           </button>
                         )}
+                      </div>
+                    )}
+
+                    {(appointment.repair_status === 'DIAGNOSIS' ||
+                      appointment.repair_status === 'WAITING_APPROVAL') && (
+                      <div className="mechanic-reception-form">
+                        {latestEstimate && (
+                          <p>
+                            <strong>Último presupuesto:</strong> versión {latestEstimate.version}
+                            {' · '}
+                            {latestEstimate.status === 'PENDING' ? 'Pendiente de respuesta' : latestEstimate.status === 'REJECTED' ? 'Rechazado' : latestEstimate.status}
+                            {' · '}
+                            {formatPrice(Number(latestEstimate.total))}
+                          </p>
+                        )}
+                        {latestEstimate?.status !== 'PENDING' ? (
+                          estimateId === appointment.repair_order_id ? (
+                            <>
+                              <h4>{latestEstimate ? 'Crear nueva versión del presupuesto' : 'Crear presupuesto'}</h4>
+                              <label htmlFor={`estimate-description-${appointment.id}`}>Concepto *</label>
+                              <input
+                                id={`estimate-description-${appointment.id}`}
+                                value={estimateDescription}
+                                maxLength={255}
+                                onChange={(event) => setEstimateDescription(event.target.value)}
+                                placeholder="Ej.: Cambio de cadena"
+                              />
+                              <label htmlFor={`estimate-quantity-${appointment.id}`}>Cantidad *</label>
+                              <input
+                                id={`estimate-quantity-${appointment.id}`}
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                value={estimateQuantity}
+                                onChange={(event) => setEstimateQuantity(event.target.value)}
+                              />
+                              <label htmlFor={`estimate-price-${appointment.id}`}>Precio unitario (ARS) *</label>
+                              <input
+                                id={`estimate-price-${appointment.id}`}
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={estimatePrice}
+                                onChange={(event) => setEstimatePrice(event.target.value)}
+                                placeholder="Ej.: 15000"
+                              />
+                              <div className="mechanic-form-actions">
+                                <button type="button" disabled={saving} onClick={() => void handleCreateEstimate(appointment.repair_order_id!)}>
+                                  {saving ? 'Enviando...' : 'Enviar presupuesto'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="mechanic-cancel"
+                                  disabled={saving}
+                                  onClick={() => {
+                                    setEstimateId(null)
+                                    setEstimateDescription('')
+                                    setEstimateQuantity('1')
+                                    setEstimatePrice('')
+                                  }}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEstimateId(appointment.repair_order_id)
+                                setError('')
+                                setMessage('')
+                              }}
+                            >
+                              {latestEstimate ? 'Crear nueva versión' : 'Crear presupuesto'}
+                            </button>
+                          )
+                        ) : null}
                       </div>
                     )}
 

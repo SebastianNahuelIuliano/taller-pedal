@@ -1,4 +1,4 @@
-﻿
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 const TOKEN_KEY = 'taller_pedal_token'
 
@@ -232,6 +232,8 @@ export interface Appointment {
   price_snapshot: number
   status: string
   created_at: string
+  repair_order_id: string | null
+  repair_status: string | null
 }
 
 interface AppointmentResponse {
@@ -274,6 +276,74 @@ interface MyAppointmentsResponse {
 export async function getMyAppointments(): Promise<Appointment[]> {
   const result = await request<MyAppointmentsResponse>('/appointments/mine')
   return result.data
+}
+
+export interface EstimateItem {
+  id: string
+  estimate_id: string
+  description: string
+  quantity: number | string
+  unit_price: number | string
+  subtotal: number | string
+}
+
+export interface Estimate {
+  id: string
+  repair_order_id: string
+  version: number
+  status: string
+  total: number | string
+  created_at: string
+  items: EstimateItem[]
+}
+
+interface EstimatesResponse {
+  success: boolean
+  data: Estimate[]
+}
+
+interface EstimateResponse {
+  success: boolean
+  message: string
+  data: Estimate
+}
+
+// Consultar los presupuestos de una orden.
+export async function getEstimates(orderId: string): Promise<Estimate[]> {
+  const result = await request<EstimatesResponse>(
+    `/repair-orders/${orderId}/estimates`,
+  )
+  return result.data
+}
+
+// Crear un presupuesto o una nueva versión.
+export async function createEstimate(
+  orderId: string,
+  items: { description: string; quantity: number; unitPrice: number }[],
+): Promise<Estimate> {
+  const result = await request<EstimateResponse>(
+    `/repair-orders/${orderId}/estimates`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ items }),
+    },
+  )
+  return result.data
+}
+
+// Aprobar o rechazar un presupuesto.
+export async function respondToEstimate(
+  orderId: string,
+  estimateId: string,
+  decision: 'APPROVED' | 'REJECTED',
+): Promise<void> {
+  await request(
+    `/repair-orders/${orderId}/estimates/${estimateId}/respond`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ decision }),
+    },
+  )
 }
 
 export interface MechanicAppointment {
