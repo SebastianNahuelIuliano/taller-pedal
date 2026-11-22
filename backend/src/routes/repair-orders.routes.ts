@@ -188,8 +188,8 @@ router.post(
            $2,
            jsonb_build_object(
              'appointment_id', $3::text,
-             'visible_condition', $4,
-             'accessories_received', $5
+             'visible_condition', $4::text,
+             'accessories_received', $5::text
            )
          )`,
         [

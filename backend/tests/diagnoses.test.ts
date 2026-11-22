@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+﻿import { beforeEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { createAccessToken } from "../src/utils/security.js";
 
@@ -127,7 +127,7 @@ describe("Diagnosticos de ordenes de reparacion", () => {
       [
         orderId,
         mechanicId,
-        "Diagnóstico inicial registrado",
+        "Diagn\u00f3stico inicial registrado",
       ]
     );
 

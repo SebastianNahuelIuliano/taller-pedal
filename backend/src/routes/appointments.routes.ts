@@ -142,20 +142,23 @@ router.get(
     try {
       const result = await pool.query(
         `SELECT
-          id,
-          client_id,
-          bicycle_id,
-          service_id,
-          mechanic_id,
-          starts_at,
-          ends_at,
+          a.id,
+          a.client_id,
+          a.bicycle_id,
+          a.service_id,
+          a.mechanic_id,
+          a.starts_at,
+          a.ends_at,
           service_name_snapshot,
           duration_minutes_snapshot,
           price_snapshot,
-          status,
-          created_at
-        FROM appointments
-        WHERE client_id = $1
+          a.status,
+          a.created_at,
+          ro.id AS repair_order_id,
+          ro.status AS repair_status
+        FROM appointments a
+        LEFT JOIN repair_orders ro ON ro.appointment_id = a.id
+        WHERE a.client_id = $1
         ORDER BY starts_at DESC`,
         [req.user!.id]
       );

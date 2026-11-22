@@ -156,7 +156,7 @@ router.post(
           [
             orderId,
             user.id,
-            "Diagnóstico inicial registrado",
+            "Diagn\u00f3stico inicial registrado",
           ]
         );
       }
@@ -176,8 +176,8 @@ router.post(
            $2,
            jsonb_build_object(
              'diagnosis_id', $3::text,
-             'description', $4,
-             'recommended_tasks', $5
+             'description', $4::text,
+             'recommended_tasks', $5::text
            )
          )`,
         [
